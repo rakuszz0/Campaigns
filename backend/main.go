@@ -2,6 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+
+	"Zakat/database"
+	"Zakat/pkg/mysql"
+	"Zakat/routes"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -9,27 +15,42 @@ import (
 )
 
 func main() {
-
-	errEnv := godotenv.Load()
-	if errEnv != nil {
-		panic("Failed to load env file")
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Failed to load .env file")
 	}
 
+	// Initialize database connection
+	mysql.DatabaseInit()
+
+	// Run database migration
+	database.RunMigration()
+
+	// Create Echo instance
 	e := echo.New()
 
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{echo.GET, echo.POST, echo.PATCH, echo.DELETE},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.PATCH, echo.DELETE},
 		AllowHeaders: []string{"X-Requested-With", "Content-Type", "Authorization"},
 	}))
 
-	// postgres.DatabaseInit()
-	// database.RunMigration()
+	// Serve static files (uploads folder)
+	e.Static("/uploads", "uploads")
 
-	// routes.RouteInit(e.Group("/api/v1"))
+	// Initialize routes
+	e = routes.InitRouter(mysql.DB)
 
-	e.Static("/uploads", "./uploads")
+	// Get port from .env or fallback
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
 
-	fmt.Println("server running localhost:5000")
-	e.Logger.Fatal(e.Start("localhost:5000"))
+	fmt.Println("🚀 Server running at http://localhost:" + port)
+	e.Logger.Fatal(e.Start(":" + port))
 }
