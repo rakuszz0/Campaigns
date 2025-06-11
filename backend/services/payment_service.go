@@ -2,9 +2,10 @@ package services
 
 import (
 	"Zakat/models"
-	"Zakat/pkg/midtrans"
+	zakatMidtrans "Zakat/pkg/midtrans"
 	"fmt"
 
+	midtransSdk "github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
 )
 
@@ -22,20 +23,21 @@ func NewPaymentService() PaymentService {
 func (s *paymentService) CreateTransaction(donation models.Donation) (*coreapi.ChargeResponse, error) {
 	req := &coreapi.ChargeReq{
 		PaymentType: coreapi.PaymentTypeBankTransfer,
-		TransactionDetails: coreapi.TransactionDetails{
+		TransactionDetails: midtransSdk.TransactionDetails{
 			OrderID:  fmt.Sprintf("%d", donation.ID),
 			GrossAmt: int64(donation.Amount),
 		},
 		BankTransfer: &coreapi.BankTransferDetails{
-			Bank: coreapi.BankBCA,
+			Bank: midtransSdk.BankBca,
 		},
 	}
 
-	return midtrans.CoreClient.ChargeTransaction(req)
+	return zakatMidtrans.CoreClient.ChargeTransaction(req)
+
 }
 
 func (s *paymentService) VerifyPayment(orderID string) (bool, error) {
-	status, err := midtrans.CoreClient.CheckTransaction(orderID)
+	status, err := zakatMidtrans.CoreClient.CheckTransaction(orderID)
 	if err != nil {
 		return false, err
 	}
