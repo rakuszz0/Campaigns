@@ -5,8 +5,12 @@ import { Outlet, Navigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
 
 export default function PrivateRoute(props) {
+   //   const DataUser = JSON.parse(localStorage.getItem("UserSignIn"));
 
-  const [state, dispatch] = useContext(UserContext);
+  // const dataUser = JSON.parse(localStorage.getItem("UserSignUp"))
+
+  const [state, _] = useContext(UserContext);
+   console.log(state.user.listAsRole);
 
   return state.user.list_as_role == "Admin" ? <Outlet /> : <Navigate to="/" />;
 }

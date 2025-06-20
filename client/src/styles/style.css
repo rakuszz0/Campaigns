@@ -1,0 +1,185 @@
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #f8f9fa;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar-auth {
+  display: flex;
+  gap: 1rem;
+}
+
+/* File: src/styles/style.css */
+
+/* ===== GENERAL STYLES ===== */
+.content-container {
+  font-family: 'Poppins', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ===== HEADER SECTION ===== */
+.campaign-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.campaign-header h2 {
+  color: #2E8B57;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.campaign-highlight {
+  background-color: #F0FFF0;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.highlight-item {
+  text-align: center;
+}
+
+.highlight-item h3 {
+  color: #2E8B57;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+/* ===== SERVICES SECTION ===== */
+.services-section {
+  margin: 40px 0;
+}
+
+.service-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.service-card {
+  background-color: #F8F8F8;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.service-link {
+  color: #2E8B57;
+  font-weight: bold;
+}
+
+/*==== navbar styles ====*/
+/* Bottom Sheet Modal */
+.bottom-sheet-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  max-width: 100%;
+  height: auto;
+  max-height: 90vh;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+  border: none;
+}
+
+.bottom-sheet-modal.show {
+  transform: translateY(0);
+}
+
+.modal-content-bottom {
+  border-radius: 20px 20px 0 0;
+  border: none;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-backdrop-bottom {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Custom Styles */
+.custom-input {
+  border-radius: 10px;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+.custom-btn {
+  border-radius: 10px;
+  padding: 12px;
+  background-color: #2E8B57;
+  border: none;
+}
+
+.custom-btn:hover {
+  background-color: #247348;
+}
+
+.small-text {
+  font-size: 0.85rem;
+}
+
+.separator {
+  position: relative;
+  height: 1px;
+  background-color: #ddd;
+  margin: 20px 0;
+}
+
+.separator span {
+  position: relative;
+  top: -10px;
+  color: #777;
+  font-size: 0.8rem;
+}
+
+.social-login .btn {
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* forgot password styles */
+/* Add to your existing modal styles */
+.forgot-password-modal .modal-header {
+  border-bottom: none;
+}
+
+.forgot-password-modal .modal-body {
+  padding: 2rem;
+}
+
+
+/* ===== WHY US SECTION ===== */
+/* .why-us-section {
+  text-align: center;
+  margin-top: 60px;
+  background-color: #F0FFF0;
+}
+
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.feature {
+  max-width: 300px;
+} */

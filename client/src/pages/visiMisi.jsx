@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const VisionMissionPage = () => {
   return (
@@ -6,31 +7,34 @@ const VisionMissionPage = () => {
       {/* Navigation Bar */}
       <nav style={styles.nav}>
         <ul style={styles.navList}>
-          <li style={styles.navItem}><a href="#" style={styles.navLink}>Home</a></li>
-          <li style={styles.navItem}><a href="#" style={styles.navLink}>Service</a></li>
-          <li style={styles.navItem}><a href="#" style={styles.navLink}>About</a></li>
+          <li style={styles.navItem}><Link to="/" style={styles.navLink}>Home</Link></li>
+          <li style={styles.navItem}><Link to="/service" style={styles.navLink}>Service</Link></li>
+          <li style={styles.navItem}><Link to="/about" style={styles.navLink}>About</Link></li>
         </ul>
       </nav>
-      
+
       {/* Main Content */}
       <main style={styles.main}>
         <h1 style={styles.mainTitle}>Vision & Mission</h1>
-        <p style={styles.paragraph}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at ipsum vitae lacus lobortis lacinia. Donec tristique arcu massa, at pharetra tortor feugiat non.
+        <p style={styles.intro}>
+          We are committed to building a sustainable and impactful future through clear vision and strong mission.
         </p>
-        
+
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Vision</h2>
+          <h2 style={styles.sectionTitle}>Our Vision</h2>
           <p style={styles.paragraph}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at ipsum vitae lacus lobortis lacinia. Donec tristique arcu massa, at.
+            To become a leading organization that drives positive change, promotes environmental sustainability,
+            and empowers communities for a better tomorrow.
           </p>
         </div>
-        
+
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Mission</h2>
-          <p style={styles.paragraph}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at ipsum vitae lacus lobortis lacinia. Donec tristique arcu massa, at.
-          </p>
+          <h2 style={styles.sectionTitle}>Our Mission</h2>
+          <ul style={styles.list}>
+            <li>Promote awareness about environmental issues and sustainable practices.</li>
+            <li>Empower communities through education, campaigns, and green initiatives.</li>
+            <li>Collaborate with partners to develop impactful projects for society and nature.</li>
+          </ul>
         </div>
       </main>
     </div>
@@ -41,14 +45,14 @@ const VisionMissionPage = () => {
 const styles = {
   container: {
     fontFamily: "'Arial', sans-serif",
-    maxWidth: '1200px',
+    maxWidth: '1000px',
     margin: '0 auto',
-    padding: '20px',
+    padding: '40px 20px',
     color: '#333',
   },
   nav: {
     marginBottom: '40px',
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid #ddd',
     paddingBottom: '10px',
   },
   navList: {
@@ -56,46 +60,57 @@ const styles = {
     padding: 0,
     margin: 0,
     display: 'flex',
-    gap: '20px',
+    gap: '30px',
   },
-  navItem: {
-    padding: '5px 0',
-  },
+  navItem: {},
   navLink: {
     textDecoration: 'none',
-    color: '#333',
-    fontSize: '16px',
-    fontWeight: '500',
-    transition: 'color 0.3s ease',
+    color: '#2c3e50',
+    fontSize: '18px',
+    fontWeight: '600',
+    transition: 'color 0.3s',
   },
   main: {
-    maxWidth: '800px',
-    margin: '0 auto',
+    textAlign: 'center',
   },
   mainTitle: {
-    fontSize: '36px',
+    fontSize: '40px',
     fontWeight: '700',
     marginBottom: '20px',
     color: '#2c3e50',
-    textAlign: 'center',
+  },
+  intro: {
+    fontSize: '18px',
+    lineHeight: '1.7',
+    color: '#555',
+    marginBottom: '40px',
+    maxWidth: '700px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   section: {
-    margin: '40px 0',
-    padding: '20px',
+    marginBottom: '40px',
+    padding: '30px',
     backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
+    borderRadius: '10px',
+    textAlign: 'left',
   },
   sectionTitle: {
-    fontSize: '24px',
+    fontSize: '28px',
     fontWeight: '600',
     marginBottom: '15px',
-    color: '#3498db',
+    color: '#27ae60',
   },
   paragraph: {
-    fontSize: '16px',
-    lineHeight: '1.6',
+    fontSize: '17px',
+    lineHeight: '1.7',
     color: '#555',
-    marginBottom: '15px',
+  },
+  list: {
+    paddingLeft: '20px',
+    fontSize: '17px',
+    lineHeight: '1.7',
+    color: '#555',
   },
 };
 
