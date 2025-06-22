@@ -8,8 +8,9 @@ const ContactUsPage = () => {
       <nav style={styles.nav}>
         <ul style={styles.navList}>
           <li style={styles.navItem}><Link to="/" style={styles.navLink}>Home</Link></li>
-          <li style={styles.navItem}><Link to="/services" style={styles.navLink}>Services</Link></li>
-          <li style={styles.navItem}><Link to="/about" style={styles.navLink}>About</Link></li>
+          {/* <li style={styles.navItem}><Link to="/services" style={styles.navLink}>Services</Link></li> */}
+          <li style={styles.navItem}><Link to="/about-us" style={styles.navLink}>About</Link></li>
+          <li style={styles.navItem}><Link to="/vision-mission" style={styles.navLink}>Visi Misi</Link></li>
         </ul>
       </nav>
 
@@ -21,25 +22,60 @@ const ContactUsPage = () => {
         </p>
 
         <div style={styles.contactInfo}>
-          <ContactItem label="Email" value="hello@reallygreatsite.com" />
-          <ContactItem label="Website" value="www.reallygreatsite.com" />
-          <ContactItem label="Social Media" value="@reallygreatsite" />
-          <ContactItem label="Phone Number" value="+123-456-7890" />
+          <ContactItem 
+            label="Email" 
+            value="wandaoctavia2710@gmail.com" 
+            link="mailto:wandaoctavia2710@gmail.com"
+            icon="envelope"
+          />
+          
+          <ContactItem 
+            label="Instagram" 
+            value="@wndaoc.el" 
+            link="https://instagram.com/wndaoc.el"
+            icon="instagram"
+          />
+          
+          <ContactItem 
+            label="WhatsApp" 
+            value="+62 881-6191-184" 
+            link="https://wa.me/628816191184"
+            icon="whatsapp"
+          />
         </div>
       </main>
     </div>
   );
 };
 
-// Reusable Contact Item
-const ContactItem = ({ label, value }) => (
-  <div style={styles.contactItem}>
-    <span style={styles.contactLabel}>{label}</span>
-    <span style={styles.contactValue}>{value}</span>
-  </div>
-);
+// Improved Contact Item component with icons and click handling
+const ContactItem = ({ label, value, link, icon }) => {
+  const handleClick = () => {
+    if (link) {
+      window.open(link, link.startsWith('mailto:') ? '_self' : '_blank');
+    }
+  };
 
-// Styles
+  return (
+    <div 
+      style={styles.contactItem}
+      onClick={handleClick}
+    >
+      <div style={styles.contactIcon}>
+        <i className={`bi bi-${icon}`} style={{ fontSize: '20px' }}></i>
+      </div>
+      <div style={styles.contactDetails}>
+        <span style={styles.contactLabel}>{label}</span>
+        <span style={styles.contactValue}>{value}</span>
+      </div>
+      <div style={styles.contactArrow}>
+        <i className="bi bi-chevron-right"></i>
+      </div>
+    </div>
+  );
+};
+
+// Enhanced Styles
 const styles = {
   container: {
     fontFamily: "'Arial', sans-serif",
@@ -47,6 +83,7 @@ const styles = {
     margin: '0 auto',
     padding: '20px',
     color: '#333',
+    minHeight: '100vh',
   },
   nav: {
     marginBottom: '40px',
@@ -68,6 +105,10 @@ const styles = {
     color: '#333',
     fontSize: '16px',
     fontWeight: '500',
+    transition: 'color 0.3s',
+    ':hover': {
+      color: '#2e8b57',
+    }
   },
   main: {
     maxWidth: '800px',
@@ -88,26 +129,58 @@ const styles = {
   },
   contactInfo: {
     backgroundColor: '#f9f9f9',
-    padding: '30px',
-    borderRadius: '8px',
+    padding: '20px',
+    borderRadius: '12px',
     maxWidth: '600px',
     margin: '0 auto',
-    textAlign: 'left',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
   },
   contactItem: {
     display: 'flex',
-    marginBottom: '15px',
-    paddingBottom: '15px',
-    borderBottom: '1px solid #eee',
+    alignItems: 'center',
+    padding: '15px',
+    marginBottom: '10px',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    border: '1px solid #eee',
+    ':hover': {
+      backgroundColor: '#f0f0f0',
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+    }
+  },
+  contactIcon: {
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    backgroundColor: '#2e8b57',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: '15px',
+  },
+  contactDetails: {
+    flex: 1,
+    textAlign: 'left',
   },
   contactLabel: {
+    display: 'block',
     fontWeight: '600',
-    width: '150px',
-    color: '#3498db',
+    color: '#555',
+    fontSize: '14px',
+    marginBottom: '3px',
   },
   contactValue: {
-    flex: 1,
-    wordBreak: 'break-word',
+    display: 'block',
+    color: '#2e8b57',
+    fontWeight: '500',
+    fontSize: '16px',
+  },
+  contactArrow: {
+    color: '#999',
   },
 };
 

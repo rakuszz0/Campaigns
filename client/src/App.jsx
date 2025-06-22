@@ -20,6 +20,7 @@ import { API, setAuthToken } from "./config/api";
 
 // Gambar background
 import BackgroundImage from "./assests/icons/web amalsas.jpg";
+import ContactUsPage from "./pages/ContactUs";
 
 // React Query client
 const queryClient = new QueryClient();
@@ -88,6 +89,7 @@ function AppContent() {
 
         <Route path="/about-us" element={<AboutUs />} /> 
         <Route path="/vision-mission" element={<VisionMissionPage />} /> 
+        <Route path="/contact-us" element={<ContactUsPage/>}/>
 
         <Route path="/home-admin" element={<HomeAdmin />} />
 

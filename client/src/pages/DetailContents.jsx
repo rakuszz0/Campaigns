@@ -48,6 +48,10 @@ const DetailCampaign = () => {
 
       <main style={{ maxWidth: '800px', margin: '50px auto', textAlign: 'center', padding: '20px' }}>
         <h1>{campaign.title}</h1>
+        <img
+          src={`https://via.placeholder.com/600x300?text=${campaign.title}`}
+          alt={campaign.title}
+          style={{ width: '100%', height: 'auto', marginBottom: '20px' }}/>
         <p>{campaign.description}</p>
         <p>{campaign.detail}</p>
       </main>
