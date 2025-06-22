@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"Zakat/dto"
-	"Zakat/models"
-	"Zakat/repositories"
-	"Zakat/services"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+	dto "zakat/dto/result"
+	"zakat/models"
+	"zakat/repositories"
+	"zakat/services"
 
 	"github.com/labstack/echo/v4"
 )
@@ -39,10 +39,10 @@ func NewHandler(
 func (h *Handler) CreateUser(c echo.Context) error {
 	var req models.User
 	if err := c.Bind(&req); err != nil {
+		log.Println("CreateUser Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Invalid request body",
-			Error:   err.Error(),
 		})
 	}
 
@@ -50,10 +50,10 @@ func (h *Handler) CreateUser(c echo.Context) error {
 	req.UpdatedAt = time.Now()
 
 	if err := h.userRepository.Create(&req); err != nil {
+		log.Println("CreateUser Create error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to create user",
-			Error:   err.Error(),
 		})
 	}
 
@@ -74,10 +74,10 @@ func (h *Handler) GetUser(c echo.Context) error {
 
 	user, err := h.userRepository.GetByID(uint(id))
 	if err != nil {
+		log.Println("GetUser GetByID error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get user",
-			Error:   err.Error(),
 		})
 	}
 
@@ -97,10 +97,10 @@ func (h *Handler) GetUser(c echo.Context) error {
 func (h *Handler) GetAllUsers(c echo.Context) error {
 	users, err := h.userRepository.GetAll()
 	if err != nil {
+		log.Println("GetAllUsers GetAll error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get users",
-			Error:   err.Error(),
 		})
 	}
 
@@ -121,10 +121,10 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 
 	user, err := h.userRepository.GetByID(uint(id))
 	if err != nil {
+		log.Println("UpdateUser GetByID error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get user",
-			Error:   err.Error(),
 		})
 	}
 
@@ -136,20 +136,20 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 	}
 
 	if err := c.Bind(user); err != nil {
+		log.Println("UpdateUser Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Invalid request body",
-			Error:   err.Error(),
 		})
 	}
 
 	user.UpdatedAt = time.Now()
 
 	if err := h.userRepository.Update(user); err != nil {
+		log.Println("UpdateUser Update error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to update user",
-			Error:   err.Error(),
 		})
 	}
 
@@ -169,10 +169,10 @@ func (h *Handler) DeleteUser(c echo.Context) error {
 	}
 
 	if err := h.userRepository.Delete(uint(id)); err != nil {
+		log.Println("DeleteUser Delete error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to delete user",
-			Error:   err.Error(),
 		})
 	}
 
@@ -187,10 +187,10 @@ func (h *Handler) DeleteUser(c echo.Context) error {
 func (h *Handler) CreateCampaign(c echo.Context) error {
 	var req models.Campaign
 	if err := c.Bind(&req); err != nil {
+		log.Println("CreateCampaign Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Invalid request body",
-			Error:   err.Error(),
 		})
 	}
 
@@ -198,10 +198,10 @@ func (h *Handler) CreateCampaign(c echo.Context) error {
 	req.UpdatedAt = time.Now()
 
 	if err := h.campaignRepository.Create(&req); err != nil {
+		log.Println("CreateCampaign Create error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to create campaign",
-			Error:   err.Error(),
 		})
 	}
 
@@ -222,10 +222,10 @@ func (h *Handler) GetCampaignByID(c echo.Context) error {
 
 	campaign, err := h.campaignRepository.GetByID(uint(id))
 	if err != nil {
+		log.Println("GetCampaignByID GetByID error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get campaign",
-			Error:   err.Error(),
 		})
 	}
 
@@ -245,10 +245,10 @@ func (h *Handler) GetCampaignByID(c echo.Context) error {
 func (h *Handler) GetAllCampaigns(c echo.Context) error {
 	campaigns, err := h.campaignRepository.GetAll()
 	if err != nil {
+		log.Println("GetAllCampaigns GetAll error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get campaigns",
-			Error:   err.Error(),
 		})
 	}
 
@@ -269,10 +269,10 @@ func (h *Handler) UpdateCampaign(c echo.Context) error {
 
 	campaign, err := h.campaignRepository.GetByID(uint(id))
 	if err != nil {
+		log.Println("UpdateCampaign GetByID error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get campaign",
-			Error:   err.Error(),
 		})
 	}
 
@@ -284,20 +284,20 @@ func (h *Handler) UpdateCampaign(c echo.Context) error {
 	}
 
 	if err := c.Bind(campaign); err != nil {
+		log.Println("UpdateCampaign Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Invalid request body",
-			Error:   err.Error(),
 		})
 	}
 
 	campaign.UpdatedAt = time.Now()
 
 	if err := h.campaignRepository.Update(campaign); err != nil {
+		log.Println("UpdateCampaign Update error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to update campaign",
-			Error:   err.Error(),
 		})
 	}
 
@@ -317,10 +317,10 @@ func (h *Handler) DeleteCampaign(c echo.Context) error {
 	}
 
 	if err := h.campaignRepository.Delete(uint(id)); err != nil {
+		log.Println("DeleteCampaign Delete error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to delete campaign",
-			Error:   err.Error(),
 		})
 	}
 
@@ -331,7 +331,7 @@ func (h *Handler) DeleteCampaign(c echo.Context) error {
 }
 
 func (h *Handler) GetDonationsByCampaign(c echo.Context) error {
-	campaignID, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
@@ -339,12 +339,12 @@ func (h *Handler) GetDonationsByCampaign(c echo.Context) error {
 		})
 	}
 
-	donations, err := h.campaignRepository.GetDonations(uint(campaignID))
+	donations, err := h.campaignRepository.GetDonations(uint(id))
 	if err != nil {
+		log.Println("GetDonationsByCampaign GetDonations error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
-			Message: "Failed to get donations",
-			Error:   err.Error(),
+			Message: "Failed to get donations for campaign",
 		})
 	}
 
@@ -359,16 +359,14 @@ func (h *Handler) GetDonationsByCampaign(c echo.Context) error {
 func (h *Handler) CreateDonation(c echo.Context) error {
 	var req models.Donation
 
-	// Bind incoming JSON to Donation struct
 	if err := c.Bind(&req); err != nil {
+		log.Println("CreateDonation Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Invalid request body",
-			Error:   err.Error(),
 		})
 	}
 
-	// Basic validation: amount should be > 0
 	if req.Amount <= 0 {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
@@ -376,35 +374,29 @@ func (h *Handler) CreateDonation(c echo.Context) error {
 		})
 	}
 
-	// Set timestamps and initial status
 	now := time.Now()
 	req.Date = now
 	req.CreatedAt = now
 	req.UpdatedAt = now
 	req.Status = "pending"
 
-	// Attempt to create the donation record in repository
 	if err := h.donationRepository.Create(&req); err != nil {
-		log.Printf("Error creating donation: %v", err)
+		log.Println("CreateDonation Create error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to create donation",
-			Error:   err.Error(),
 		})
 	}
 
-	// Initiate payment transaction through payment service
 	paymentResp, err := h.paymentService.CreateTransaction(req)
 	if err != nil {
-		log.Printf("Error creating payment transaction: %v", err)
+		log.Println("CreateDonation PaymentService error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to create payment",
-			Error:   err.Error(),
 		})
 	}
 
-	// Return created response with donation data and payment redirect URL
 	return c.JSON(http.StatusCreated, dto.SuccessResult{
 		Code: http.StatusCreated,
 		Data: map[string]interface{}{
@@ -425,10 +417,10 @@ func (h *Handler) GetDonationByID(c echo.Context) error {
 
 	donation, err := h.donationRepository.GetByID(uint(id))
 	if err != nil {
+		log.Println("GetDonationByID GetByID error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get donation",
-			Error:   err.Error(),
 		})
 	}
 
@@ -448,10 +440,10 @@ func (h *Handler) GetDonationByID(c echo.Context) error {
 func (h *Handler) GetAllDonations(c echo.Context) error {
 	donations, err := h.donationRepository.GetAll()
 	if err != nil {
+		log.Println("GetAllDonations GetAll error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get donations",
-			Error:   err.Error(),
 		})
 	}
 
@@ -472,10 +464,10 @@ func (h *Handler) UpdateDonation(c echo.Context) error {
 
 	donation, err := h.donationRepository.GetByID(uint(id))
 	if err != nil {
+		log.Println("UpdateDonation GetByID error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get donation",
-			Error:   err.Error(),
 		})
 	}
 
@@ -487,20 +479,20 @@ func (h *Handler) UpdateDonation(c echo.Context) error {
 	}
 
 	if err := c.Bind(donation); err != nil {
+		log.Println("UpdateDonation Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Invalid request body",
-			Error:   err.Error(),
 		})
 	}
 
 	donation.UpdatedAt = time.Now()
 
 	if err := h.donationRepository.Update(donation); err != nil {
+		log.Println("UpdateDonation Update error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to update donation",
-			Error:   err.Error(),
 		})
 	}
 
@@ -520,10 +512,10 @@ func (h *Handler) DeleteDonation(c echo.Context) error {
 	}
 
 	if err := h.donationRepository.Delete(uint(id)); err != nil {
+		log.Println("DeleteDonation Delete error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to delete donation",
-			Error:   err.Error(),
 		})
 	}
 
@@ -544,10 +536,10 @@ func (h *Handler) GetByCampaign(c echo.Context) error {
 
 	donations, err := h.donationRepository.GetByCampaign(uint(campaignID))
 	if err != nil {
+		log.Println("GetByCampaign GetByCampaign error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get donations by campaign",
-			Error:   err.Error(),
 		})
 	}
 
@@ -557,13 +549,15 @@ func (h *Handler) GetByCampaign(c echo.Context) error {
 	})
 }
 
+// ==================== Payment Notification ====================
+
 func (h *Handler) HandlePaymentNotification(c echo.Context) error {
 	var notification map[string]interface{}
 	if err := c.Bind(&notification); err != nil {
+		log.Println("HandlePaymentNotification Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Invalid notification payload",
-			Error:   err.Error(),
 		})
 	}
 
@@ -577,10 +571,10 @@ func (h *Handler) HandlePaymentNotification(c echo.Context) error {
 
 	success, err := h.paymentService.VerifyPayment(orderID)
 	if err != nil {
+		log.Println("HandlePaymentNotification VerifyPayment error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to verify payment",
-			Error:   err.Error(),
 		})
 	}
 
@@ -588,10 +582,10 @@ func (h *Handler) HandlePaymentNotification(c echo.Context) error {
 		donationID, _ := strconv.Atoi(orderID)
 		donation, err := h.donationRepository.GetByID(uint(donationID))
 		if err != nil {
+			log.Println("HandlePaymentNotification GetByID error:", err)
 			return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 				Code:    http.StatusInternalServerError,
 				Message: "Failed to get donation",
-				Error:   err.Error(),
 			})
 		}
 
@@ -604,10 +598,10 @@ func (h *Handler) HandlePaymentNotification(c echo.Context) error {
 
 		donation.Status = "paid"
 		if err := h.donationRepository.Update(donation); err != nil {
+			log.Println("HandlePaymentNotification Update error:", err)
 			return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 				Code:    http.StatusInternalServerError,
 				Message: "Failed to update donation status",
-				Error:   err.Error(),
 			})
 		}
 	}

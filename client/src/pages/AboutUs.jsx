@@ -1,11 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 const AboutUs = () => {
   return (
     <div className="flex flex-col min-h-screen bg-green-50">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-md py-4 px-8">
+      {/* Navigation Bar */
+      /* <nav className="bg-white shadow-md py-4 px-8">
         <ul className="flex flex-wrap justify-center md:justify-start gap-6">
           <li className="hover:bg-green-100 px-3 py-1 rounded transition">
             <Link to="/" className="text-green-700 font-medium hover:text-green-900">
@@ -23,7 +23,7 @@ const AboutUs = () => {
             </Link>
           </li>
         </ul>
-      </nav>
+      </nav> */}
 
       {/* Main Content */}
       <div className="flex flex-col md:flex-row items-center justify-between p-8 flex-grow">

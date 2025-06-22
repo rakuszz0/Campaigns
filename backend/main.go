@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"Zakat/database"
-	"Zakat/pkg/mysql"
-	"Zakat/routes"
+	"zakat/database"
+	"zakat/pkg/mysql"
+	"zakat/routes"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"

@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { API } from "../config/api";
 import { FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
 import ForgotPasswordModal from "./ForgotPassword";
-import WhyUs from "./Foot";
+
 
 export default function SignInModal({ show, onHide, openSignUp }) {
   const [showForgotPassword, setShowForgotPassword] = useState(false);

@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"Zakat/models"
 	"errors"
+	"zakat/models"
 
 	"gorm.io/gorm"
 )

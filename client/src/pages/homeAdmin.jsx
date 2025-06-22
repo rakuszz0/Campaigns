@@ -59,7 +59,7 @@ function HomeOwner() {
 
   return (
     <>
-      <NavbarWithoutSearch />
+
       <Container style={{ marginTop: "120px", marginBottom: "50px" }}>
         <h1 className="mb-4">Campaign Management</h1>
         

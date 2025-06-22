@@ -1,11 +1,11 @@
-package authdto
+package dto
 
 import "time"
 
 // --- Request DTOs ---
 
 // SignUpRequest digunakan saat donatur atau admin mendaftar
-// @Example {"first_name":"John", "last_name":"Doe", "username":"johndoe", "phone":"+6281234567890", "email":"john@example.com", "password":"SecurePass123!", "is_admin":false}
+
 type SignUpRequest struct {
 	FirstName string `json:"first_name" validate:"required,min=2,max=50"`
 	LastName  string `json:"last_name" validate:"required,min=2,max=50"`

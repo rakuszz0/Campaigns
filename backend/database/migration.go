@@ -1,8 +1,8 @@
 package database
 
 import (
-	"Zakat/models"
 	"fmt"
+	"zakat/models"
 
 	"gorm.io/gorm"
 )

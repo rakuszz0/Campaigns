@@ -11,12 +11,12 @@ import {
   PersonCircle
 } from "react-bootstrap-icons";
 
-import NavbarWithoutSearch from "../components/NavbarWithoutSearch";
+// import NavbarWithoutSearch from "../components/NavbarWithoutSearch";
 import ChangePassword from "../components/ChangePassword";
-import ChangeImageModal from "../components/ChangeImageModal";
+import ChangeImageModal from "../components/ChangeImage";
 
 import { UserContext } from "../context/userContext";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { API } from "../config/api";
 
 export default function Profile() {
@@ -46,7 +46,7 @@ export default function Profile() {
 
   return (
     <>
-      <NavbarWithoutSearch />
+      {/* <NavbarWithoutSearch /> */}
 
       <Container className="my-4">
         <Row className="bg-white p-5 rounded shadow justify-content-between">

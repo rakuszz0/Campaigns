@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	dto "Zakat/dto/result"
+	dto "zakat/dto/result"
 
-	jwtToken "Zakat/pkg/jwt"
+	jwtToken "zakat/pkg/jwt"
 )
 
 // Auth is a middleware that checks for a valid JWT token.

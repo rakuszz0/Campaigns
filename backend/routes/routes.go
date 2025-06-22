@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"Zakat/handlers"
-	"Zakat/pkg/midtrans"
-	"Zakat/repositories"
-	"Zakat/services"
+	"zakat/handlers"
+	"zakat/pkg/midtrans"
+	"zakat/repositories"
+	"zakat/services"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

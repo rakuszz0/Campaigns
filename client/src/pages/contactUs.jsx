@@ -4,15 +4,7 @@ import { Link } from 'react-router-dom';
 const ContactUsPage = () => {
   return (
     <div style={styles.container}>
-      {/* Navigation Bar */}
-      <nav style={styles.nav}>
-        <ul style={styles.navList}>
-          <li style={styles.navItem}><Link to="/" style={styles.navLink}>Home</Link></li>
-          {/* <li style={styles.navItem}><Link to="/services" style={styles.navLink}>Services</Link></li> */}
-          <li style={styles.navItem}><Link to="/about-us" style={styles.navLink}>About</Link></li>
-          <li style={styles.navItem}><Link to="/vision-mission" style={styles.navLink}>Visi Misi</Link></li>
-        </ul>
-      </nav>
+     
 
       {/* Main Content */}
       <main style={styles.main}>

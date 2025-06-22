@@ -10,7 +10,7 @@ export default function ContentData() {
       description: "Membantu yang membutuhkan",
       target: "Rp 10.000.000",
       collected: "Rp 8.500.000",
-      image: "/images/jumat-berkah.jpg",
+      image: "/assets/icons/masjid.png",
       link: "/jumat-berkah"
     },
     {

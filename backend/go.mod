@@ -1,4 +1,4 @@
-module Zakat
+module zakat
 
 go 1.23.3
 

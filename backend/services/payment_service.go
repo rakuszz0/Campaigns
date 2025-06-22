@@ -1,9 +1,9 @@
 package services
 
 import (
-	"Zakat/models"
-	zakatMidtrans "Zakat/pkg/midtrans"
 	"fmt"
+	"zakat/models"
+	zakatMidtrans "zakat/pkg/midtrans"
 
 	midtransSdk "github.com/midtrans/midtrans-go"
 	"github.com/midtrans/midtrans-go/coreapi"
