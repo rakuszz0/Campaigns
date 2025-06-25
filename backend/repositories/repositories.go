@@ -16,6 +16,7 @@ type UserRepository interface {
 	Update(user *models.User) error
 	Delete(id uint) error
 	GetByEmail(email string) (*models.User, error)
+	GetByUsername(username string) (*models.User, error)
 }
 
 type userRepository struct {
@@ -47,6 +48,15 @@ func (r *userRepository) GetByID(id uint) (*models.User, error) {
 func (r *userRepository) GetByEmail(email string) (*models.User, error) {
 	var user models.User
 	err := r.db.Where("email = ?", email).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	return &user, err
+}
+
+func (r *userRepository) GetByUsername(username string) (*models.User, error) {
+	var user models.User
+	err := r.db.Where("username = ?", username).First(&user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}

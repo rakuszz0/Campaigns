@@ -29,7 +29,6 @@ const AddCampaign = () => {
 
   return (
     <>
-      <Navbar />
 
       <main style={{ maxWidth: '800px', margin: '50px auto', padding: '20px' }}>
         <h1 style={{ textAlign: 'center' }}>Tambah Campaign Baru</h1>

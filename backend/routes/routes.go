@@ -1,13 +1,17 @@
 package routes
 
 import (
+	"net/http"
+
 	"zakat/handlers"
+	"zakat/pkg/bcrypt"
+	"zakat/pkg/middleware"
 	"zakat/pkg/midtrans"
 	"zakat/repositories"
 	"zakat/services"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 )
 
@@ -15,9 +19,9 @@ func InitRouter(db *gorm.DB) *echo.Echo {
 	e := echo.New()
 
 	// Middleware
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(echoMiddleware.Logger())
+	e.Use(echoMiddleware.Recover())
+	e.Use(echoMiddleware.CORS())
 
 	// Initialize Midtrans
 	midtrans.Init()
@@ -35,6 +39,28 @@ func InitRouter(db *gorm.DB) *echo.Echo {
 
 	// API Routes
 	api := e.Group("/api/v1")
+	// check authentication
+	api.GET("/check-auth", middleware.Auth(handler.CheckAuth))
+
+	api.POST("/verify-password", func(c echo.Context) error {
+		var req struct {
+			Password string `json:"password"`
+			Hash     string `json:"hash"`
+		}
+		if err := c.Bind(&req); err != nil {
+			return err
+		}
+
+		match := bcrypt.CheckPasswordHash(req.Password, req.Hash)
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"match":    match,
+			"password": req.Password,
+			"hash":     req.Hash,
+		})
+	})
+	// Auth Routes (clear separation)
+	api.POST("/signup", handler.CreateUser) // Register
+	api.POST("/signin", handler.SignIn)     // Login
 
 	// User Routes
 	userRoutes := api.Group("/users")

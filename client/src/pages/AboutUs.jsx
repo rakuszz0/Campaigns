@@ -4,26 +4,6 @@ import React from 'react';
 const AboutUs = () => {
   return (
     <div className="flex flex-col min-h-screen bg-green-50">
-      {/* Navigation Bar */
-      /* <nav className="bg-white shadow-md py-4 px-8">
-        <ul className="flex flex-wrap justify-center md:justify-start gap-6">
-          <li className="hover:bg-green-100 px-3 py-1 rounded transition">
-            <Link to="/" className="text-green-700 font-medium hover:text-green-900">
-              Home
-            </Link>
-          </li>
-          <li className="hover:bg-green-100 px-3 py-1 rounded transition">
-            <Link to="/about-us" className="text-green-700 font-medium hover:text-green-900">
-              About
-            </Link>
-          </li>
-          <li className="hover:bg-green-100 px-3 py-1 rounded transition">
-            <Link to="/vision-mission" className="text-green-700 font-medium hover:text-green-900">
-              Visi Misi
-            </Link>
-          </li>
-        </ul>
-      </nav> */}
 
       {/* Main Content */}
       <div className="flex flex-col md:flex-row items-center justify-between p-8 flex-grow">
@@ -33,12 +13,19 @@ const AboutUs = () => {
             About Us
           </h1>
           <p className="text-lg text-gray-700 mb-4 text-center md:text-left">
-            We are Green Nature — a dedicated team passionate about protecting the environment and promoting
-            sustainable living. Our mission is to raise awareness and inspire actions that make the Earth greener and healthier.
+            Sulit Air Sepakat (SAS) adalah organisasi sosial kemasyarakatan yang menghimpun masyarakat asal Nagari Sulit Air, baik yang berada di kampung maupun di perantauan.
+            Salah satu bentuk komitmen kami terhadap kepedulian sosial dan pembangunan umat adalah melalui program Jumat Berkah.
+
+
           </p>
           <p className="text-lg text-gray-700 mb-6 text-center md:text-left">
-            Through various projects and community initiatives, we aim to connect people with nature,
-            support green campaigns, and encourage everyone to contribute to a more sustainable future.
+            Melalui program ini, kami membuka kesempatan seluas-luasnya kepada para donatur untuk berkontribusi dalam bentuk donasi uang guna pembangunan gedung sosial/keagamaan, 
+            serta mendukung kegiatan lainnya seperti Zakat, Qurban, Infaq, dan Sedekah.
+
+          </p>
+          <p className="text-lg text-gray-700 mb-6 text-center md:text-left">
+            Kini, kami menghadirkan platform donasi online berbasis website agar semua proses dapat dilakukan lebih mudah, transparan, dan efisien. Website ini memungkinkan siapa saja, 
+            dari mana saja, untuk berdonasi dan ikut serta dalam membangun kebaikan bersama.
           </p>
           <div className="text-center md:text-left">
             <button className="bg-green-700 text-white py-3 px-6 rounded-lg hover:bg-green-800 transition duration-300 shadow-md hover:shadow-lg">

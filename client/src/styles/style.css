@@ -84,76 +84,20 @@
 
 /*==== navbar styles ====*/
 /* Bottom Sheet Modal */
-.bottom-sheet-modal {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: 0;
-  max-width: 100%;
-  height: auto;
-  max-height: 90vh;
-  transform: translateY(100%);
-  transition: transform 0.3s ease-out;
-  border: none;
-}
-
-.bottom-sheet-modal.show {
-  transform: translateY(0);
-}
-
-.modal-content-bottom {
-  border-radius: 20px 20px 0 0;
-  border: none;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.modal-backdrop-bottom {
-  background-color: rgba(0, 0, 0, 0.5);
-}
 
 /* Custom Styles */
-.custom-input {
-  border-radius: 10px;
-  padding: 12px 15px;
-  border: 1px solid #ddd;
+/* Tambahkan di file CSS global Anda */
+.modal-backdrop.show {
+  z-index: 9998 !important;
 }
 
-.custom-btn {
-  border-radius: 10px;
-  padding: 12px;
-  background-color: #2E8B57;
-  border: none;
+.modal {
+  z-index: 9999 !important;
 }
 
-.custom-btn:hover {
-  background-color: #247348;
-}
-
-.small-text {
-  font-size: 0.85rem;
-}
-
-.separator {
-  position: relative;
-  height: 1px;
-  background-color: #ddd;
-  margin: 20px 0;
-}
-
-.separator span {
-  position: relative;
-  top: -10px;
-  color: #777;
-  font-size: 0.8rem;
-}
-
-.social-login .btn {
-  border-radius: 10px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+body.modal-open {
+  overflow: hidden;
+  padding-right: 0 !important;
 }
 
 /* forgot password styles */

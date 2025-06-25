@@ -11,10 +11,12 @@ type User struct {
 	FirstName string         `json:"first_name" form:"first_name"`
 	LastName  string         `json:"last_name" form:"last_name"`
 	Username  string         `json:"username" form:"username" gorm:"unique"`
-	Telephone string         `json:"telephone" form:"telephone"`
+	Status    string         `json:"status" form:"status"`
+	Gender    string         `json:"gender" form:"gender"`
+	Phone     string         `json:"phone" form:"phone"`
 	Address   string         `json:"address" form:"address"`
 	Email     string         `json:"email" form:"email" gorm:"unique"`
-	Password  string         `json:"-" form:"password"` // Disembunyikan di JSON
+	Password  string         `json:"-" form:"password"`
 	IsAdmin   bool           `json:"is_admin" form:"is_admin"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
@@ -26,10 +28,12 @@ type User struct {
 }
 
 type UserResponseJWT struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"` // Nama digabung dari FirstName + LastName saat di-generate
-	Email string `json:"email"`
-	Token string `json:"token"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Token    string `json:"token"`
+	IsAdmin  bool   `json:"is_admin" form:"is_admin"`
 }
 
 type Campaign struct {

@@ -3,14 +3,11 @@ package database
 import (
 	"fmt"
 	"zakat/models"
-
-	"gorm.io/gorm"
+	"zakat/pkg/mysql"
 )
 
-var DB *gorm.DB // Make sure this is initialized elsewhere in your project
-
 func RunMigration() {
-	err := DB.AutoMigrate(
+	err := mysql.DB.AutoMigrate(
 		&models.User{},
 		&models.Campaign{},
 		&models.Donation{},

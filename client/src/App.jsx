@@ -42,52 +42,66 @@ function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  // ✅ Wrap dengan useCallback
+  //Wrap dengan useCallback
   const checkUser = useCallback(async () => {
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      dispatch({ type: "AUTH_ERROR" });
+      setIsLoading(false);
+      return;
+    }
     try {
-      const response = await API.get('/check-auth');
-      
-      if (!response.data.data) {
-        throw new Error("Invalid user data");
-      }
+      setAuthToken(token); // Set token ke Axios header
+      console.log("Stored token:", token);
+
+      const response = await API.get("/check-auth");
 
       const payload = {
         ...response.data.data,
-        token: localStorage.token
+        token,
       };
-      
-      dispatch({ type: 'USER_SUCCESS', payload });
+
+      dispatch({ type: "USER_SUCCESS", payload });
     } catch (error) {
-      console.error("Auth check failed:", error);
-      dispatch({ type: 'AUTH_ERROR' });
-      localStorage.removeItem('token');
+      console.error("Auth check failed:", error.response?.data || error.message);
+      dispatch({ type: "AUTH_ERROR" });
+      localStorage.removeItem("token");
     } finally {
       setIsLoading(false);
     }
   }, [dispatch]);
 
-  useEffect(() => {
-    if (localStorage.token) {
-      setAuthToken(localStorage.token);
-      checkUser();
-    } else {
-      setIsLoading(false);
-    }
-  }, [checkUser]);
+//   useEffect(() => {
+//   const token = localStorage.getItem("token");
+//   console.log("Stored token:", token);
+
+//   if (token) {
+//     setAuthToken(token);
+//     checkUser();
+//   } else {
+//     setIsLoading(false);
+//   }
+// }, [checkUser]);
+
+useEffect(() => {
+  checkUser();
+}, [checkUser]);
+
+
 
   useEffect(() => {
-    if (!isLoading && state.isLogin) {
-      if (state.user.listAsRole === "Admin") {
-        if (!window.location.pathname.startsWith('/admin')) {
-          navigate("/admin/dashboard");
-        }
-      } else {
-        if (window.location.pathname.startsWith('/admin')) {
-          navigate("/profile");
-        }
-      }
+  if (!isLoading && state.isLogin) {
+    const role = state.user.isAdmin;
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+
+    if (role === "Admin" && !isAdminRoute) {
+      navigate("/admin/dashboard");
+    } else if (role !== "Admin" && isAdminRoute) {
+      navigate("/profile");
     }
-  }, [state, isLoading, navigate]);
+  }
+}, [state, isLoading, navigate]);
 
   if (isLoading) {
     return <Loading fullScreen />;

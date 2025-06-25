@@ -18,9 +18,9 @@ type SignUpRequest struct {
 }
 
 // SignInRequest digunakan saat user login
-// @Example {"email":"john@example.com", "password":"SecurePass123!"}
+// @Example {"email":"test@example.com", "password":"SecurePass123!"}
 type SignInRequest struct {
-	Email    string `json:"email" validate:"required,email,max=100"`
+	Value    string `json:"value" validate:"required,min=3,max=100"`
 	Password string `json:"password" validate:"required,min=8,max=72"`
 }
 

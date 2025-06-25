@@ -5,7 +5,7 @@ import { UserContext } from "../context/userContext";
 export default function PrivateRoute() {
   const [state] = useContext(UserContext);
 
-  console.log(state.user.listAsRole);
+  if (!state.isLogin) return <Navigate to="/" />;
 
-  return state.user.list_as_role === "Admin" ? <Outlet /> : <Navigate to="/" />;
+  return !state.user.isAdmin !== "Admin" ? <Outlet /> : <Navigate to="/admin/dashboard" />;
 }

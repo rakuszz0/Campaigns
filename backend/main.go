@@ -15,11 +15,11 @@ import (
 )
 
 func main() {
-	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Failed to load .env file")
 	}
+	fmt.Println("SECRET_KEY from .env:", os.Getenv("SECRET_KEY"))
 
 	// Initialize database connection
 	mysql.DatabaseInit()
@@ -48,7 +48,7 @@ func main() {
 	// Get port from .env or fallback
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "5000"
+		port = "5050"
 	}
 
 	fmt.Println("🚀 Server running at http://localhost:" + port)

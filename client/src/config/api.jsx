@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const API = axios.create({
-  baseURL: "https://api.amaisas.id/api/v1",
+  baseURL: "http://localhost:5050/api/v1",
 });
 
 export const setAuthToken = (token) => {

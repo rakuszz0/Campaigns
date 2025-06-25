@@ -4,15 +4,10 @@ import { UserContext } from '../context/userContext';
 
 const AdminRoute = () => {
   const [state] = useContext(UserContext);
-  
-  if (!state.isLogin) {
-    return <Navigate to="/" />;
-  }
-  
-  if (state.user.listAsRole !== "Admin") {
-    return <Navigate to="/profile" />;
-  }
-  
+
+  if (!state.isLogin) return <Navigate to="/" />;
+  if (!state.user.isAdmin) return <Navigate to="/profile" />;
+
   return <Outlet />;
 };
 

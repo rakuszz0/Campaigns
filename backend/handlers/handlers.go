@@ -1,14 +1,22 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
+	dtoAuth "zakat/dto/auth"
 	dto "zakat/dto/result"
 	"zakat/models"
+	"zakat/pkg/bcrypt"
 	"zakat/repositories"
 	"zakat/services"
+
+	jwtToken "zakat/pkg/jwt"
+
+	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,10 +42,41 @@ func NewHandler(
 	}
 }
 
+// ================= Check =================
+func (h *Handler) CheckAuth(c echo.Context) error {
+	// Ambil user_id dari token JWT
+	userId := c.Get("userLogin").(int)
+	fmt.Println("CheckAuth userId:", userId)
+
+	// Fetch user dari DB
+	user, err := h.userRepository.GetByID(uint(userId))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to fetch user",
+		})
+	}
+
+	// Return user info tanpa password
+	userResponse := models.UserResponseJWT{
+		ID:       user.ID,
+		Name:     user.FirstName + " " + user.LastName,
+		Email:    user.Email,
+		Username: user.Username,
+		Token:    "",
+		IsAdmin:  user.IsAdmin,
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{
+		Code: http.StatusOK,
+		Data: userResponse,
+	})
+}
+
 // ==================== User Handlers ====================
 
 func (h *Handler) CreateUser(c echo.Context) error {
-	var req models.User
+	var req dtoAuth.SignUpRequest
 	if err := c.Bind(&req); err != nil {
 		log.Println("CreateUser Bind error:", err)
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
@@ -46,21 +85,174 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		})
 	}
 
-	req.CreatedAt = time.Now()
-	req.UpdatedAt = time.Now()
+	log.Printf("Request Body: %+v", req)
 
-	if err := h.userRepository.Create(&req); err != nil {
-		log.Println("CreateUser Create error:", err)
+	hashedPassword, err := bcrypt.HashingPassword(req.Password)
+	if err != nil {
+		log.Println("Hash error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to hash password",
+		})
+	}
+
+	user := models.User{
+		Username:  req.Username,
+		Email:     req.Email,
+		Password:  hashedPassword,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Phone:     req.Phone,
+		Address:   req.Address,
+		IsAdmin:   req.IsAdmin,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	log.Printf("Final User Model: %+v", user)
+
+	if err := h.userRepository.Create(&user); err != nil {
+		log.Println("Create error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to create user",
 		})
 	}
 
-	return c.JSON(http.StatusCreated, dto.SuccessResult{
-		Code: http.StatusCreated,
-		Data: req,
-	})
+	// Generate JWT token
+	claims := jwt.MapClaims{
+		"id":       user.ID,
+		"email":    user.Email,
+		"is_admin": user.IsAdmin,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	}
+	tokenObj := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	secretKey := []byte(jwtToken.GetSecretKey())
+
+	token, err := tokenObj.SignedString(secretKey)
+	if err != nil {
+		log.Println("CreateUser GenerateToken error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to generate authentication token",
+		})
+	}
+
+	// Buat struktur AuthData
+	authData := dtoAuth.AuthData{
+		ID:        uint(user.ID),
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Username:  user.Username,
+		Phone:     user.Phone,
+		Address:   user.Address,
+		Email:     user.Email,
+		IsAdmin:   user.IsAdmin,
+		Token:     token,
+	}
+
+	// Return ke client dengan struktur BaseResponse
+	return c.JSON(http.StatusCreated, dtoAuth.NewAuthResponse("Registration successful!", authData))
+}
+
+func (h *Handler) SignIn(c echo.Context) error {
+	var req dtoAuth.SignInRequest
+
+	if err := c.Bind(&req); err != nil {
+		log.Println("SignIn Bind error:", err)
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
+			Code:    http.StatusBadRequest,
+			Message: "Invalid request body",
+		})
+	}
+	req.Password = strings.TrimSpace(req.Password)
+	var user *models.User
+	var err error
+
+	// Trim whitespace from inputs
+	req.Value = strings.TrimSpace(req.Value)
+	req.Password = strings.TrimSpace(req.Password)
+
+	if strings.Contains(req.Value, "@") {
+		user, err = h.userRepository.GetByEmail(req.Value)
+		log.Printf("Looking up by email: %s", req.Value)
+	} else {
+		user, err = h.userRepository.GetByUsername(req.Value)
+		log.Printf("Looking up by username: %s", req.Value)
+	}
+
+	if err != nil {
+		log.Println("SignIn GetUser DB error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Server error",
+		})
+	}
+
+	if user == nil {
+		log.Println("SignIn: User not found for", req.Value)
+		return c.JSON(http.StatusUnauthorized, dto.ErrorResult{
+			Code:    http.StatusUnauthorized,
+			Message: "Invalid username/email or password",
+		})
+	}
+
+	// Debug user data (without sensitive info)
+	log.Printf("Found user ID: %d, Email: %s, Username: %s", user.ID, user.Email, user.Username)
+	log.Printf("Input password length: %d", len(req.Password))
+	log.Printf("Stored hash length: %d", len(user.Password))
+
+	// Check password
+	isValid := bcrypt.CheckPasswordHash(req.Password, user.Password)
+	log.Printf("Password valid: %v", isValid)
+
+	if !isValid {
+		return c.JSON(http.StatusUnauthorized, dto.ErrorResult{
+			Code:    http.StatusUnauthorized,
+			Message: "Invalid username/email or password",
+		})
+	}
+
+	// Generate JWT token
+	claims := jwt.MapClaims{
+		"id":       user.ID,
+		"email":    user.Email,
+		"username": user.Username,
+		"is_admin": user.IsAdmin,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(), // Token expires in 24 hours
+	}
+
+	tokenObj := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	secretKey := []byte(jwtToken.GetSecretKey())
+
+	token, err := tokenObj.SignedString(secretKey)
+	if err != nil {
+		log.Println("SignIn GenerateToken error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to generate authentication token",
+		})
+	}
+
+	// Prepare response
+	response := dto.SuccessResult{
+		Code: http.StatusOK,
+		Data: map[string]interface{}{
+			"token": token,
+			"user": models.UserResponseJWT{
+				ID:       user.ID,
+				Name:     user.FirstName + " " + user.LastName,
+				Email:    user.Email,
+				Username: user.Username,
+				Token:    token,
+				IsAdmin:  user.IsAdmin,
+			},
+		},
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func (h *Handler) GetUser(c echo.Context) error {

@@ -1,5 +1,4 @@
-// src/components/ChangePassword.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
 export default function ChangePassword({ show, onHide }) {
@@ -9,6 +8,17 @@ export default function ChangePassword({ show, onHide }) {
     confirmNewPassword: ""
   });
 
+  useEffect(() => {
+    if (!show) {
+      // Reset form when modal closes
+      setForm({
+        oldPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
+      });
+    }
+  }, [show]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -16,12 +26,17 @@ export default function ChangePassword({ show, onHide }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Change password data:", form);
-    // TODO: Integrate with your API here
     onHide();
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal 
+      show={show} 
+      onHide={onHide} 
+      centered
+      backdrop="static"
+      keyboard={false}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Change Password</Modal.Title>
       </Modal.Header>
@@ -46,6 +61,7 @@ export default function ChangePassword({ show, onHide }) {
               value={form.newPassword}
               onChange={handleChange}
               required
+              minLength={8}
             />
           </Form.Group>
 
@@ -57,6 +73,7 @@ export default function ChangePassword({ show, onHide }) {
               value={form.confirmNewPassword}
               onChange={handleChange}
               required
+              minLength={8}
             />
           </Form.Group>
 

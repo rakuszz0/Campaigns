@@ -1,10 +1,16 @@
-// src/components/ChangeImageModal.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { API } from "../config/api";
 
 export default function ChangeImageModal({ show, onHide }) {
   const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!show) {
+      setImage(null);
+    }
+  }, [show]);
 
   const handleChange = (e) => {
     setImage(e.target.files[0]);
@@ -12,23 +18,37 @@ export default function ChangeImageModal({ show, onHide }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!image) return;
+    
+    setIsLoading(true);
     try {
       const formData = new FormData();
       formData.append("image", image);
 
-      // Kirim ke API kamu
-      await API.patch("/change-image", formData);
+      await API.patch("/change-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
 
       alert("Profile image updated successfully!");
       onHide();
     } catch (err) {
       console.error(err);
       alert("Failed to update image");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal 
+      show={show} 
+      onHide={onHide} 
+      centered
+      backdrop="static"
+      keyboard={false}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Change Profile Image</Modal.Title>
       </Modal.Header>
@@ -36,10 +56,19 @@ export default function ChangeImageModal({ show, onHide }) {
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="formFile" className="mb-3">
             <Form.Label>Select New Image</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleChange} required />
+            <Form.Control 
+              type="file" 
+              accept="image/*" 
+              onChange={handleChange} 
+              required 
+            />
           </Form.Group>
-          <Button type="submit" className="w-100">
-            Upload
+          <Button 
+            type="submit" 
+            className="w-100"
+            disabled={isLoading}
+          >
+            {isLoading ? "Uploading..." : "Upload"}
           </Button>
         </Form>
       </Modal.Body>

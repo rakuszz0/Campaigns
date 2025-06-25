@@ -1,6 +1,6 @@
 import Container from "react-bootstrap/esm/Container";
 import Table from "react-bootstrap/Table";
-import NavbarWithoutSearch from "../components/Navbar";
+// import NavbarWithoutSearch from "../components/Navbar";
 import { useEffect } from "react";
 import { API } from "../config/api";
 import { useQuery } from "@tanstack/react-query"; // Updated import
