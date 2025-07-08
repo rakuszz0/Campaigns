@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 	dtoAuth "zakat/dto/auth"
+	dtoCampaign "zakat/dto/campaign"
 	dto "zakat/dto/result"
 	"zakat/models"
 	"zakat/pkg/bcrypt"
@@ -121,10 +124,10 @@ func (h *Handler) CreateUser(c echo.Context) error {
 
 	// Generate JWT token
 	claims := jwt.MapClaims{
-		"id":       user.ID,
-		"email":    user.Email,
-		"is_admin": user.IsAdmin,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		"id":      user.ID,
+		"email":   user.Email,
+		"isAdmin": user.IsAdmin,
+		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	}
 	tokenObj := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -219,7 +222,7 @@ func (h *Handler) SignIn(c echo.Context) error {
 		"id":       user.ID,
 		"email":    user.Email,
 		"username": user.Username,
-		"is_admin": user.IsAdmin,
+		"isAdmin":  user.IsAdmin,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(), // Token expires in 24 hours
 	}
 
@@ -246,6 +249,10 @@ func (h *Handler) SignIn(c echo.Context) error {
 				Name:     user.FirstName + " " + user.LastName,
 				Email:    user.Email,
 				Username: user.Username,
+				Gender:   user.Gender,
+				Phone:    user.Phone,
+				Address:  user.Address,
+				Photo:    user.Photo,
 				Token:    token,
 				IsAdmin:  user.IsAdmin,
 			},
@@ -377,19 +384,91 @@ func (h *Handler) DeleteUser(c echo.Context) error {
 // ==================== Campaign Handlers ====================
 
 func (h *Handler) CreateCampaign(c echo.Context) error {
-	var req models.Campaign
-	if err := c.Bind(&req); err != nil {
-		log.Println("CreateCampaign Bind error:", err)
-		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
-			Code:    http.StatusBadRequest,
-			Message: "Invalid request body",
-		})
+	var req dtoCampaign.CampaignCreateRequest
+
+	// Manual parsing multipart form
+	if err := c.Request().ParseMultipartForm(10 << 20); err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: "Failed to parse form"})
 	}
 
-	req.CreatedAt = time.Now()
-	req.UpdatedAt = time.Now()
+	req.Title = c.FormValue("title")
+	req.Description = c.FormValue("description")
+	req.Details = c.FormValue("details")
+	req.Category = c.FormValue("category")
+	req.CPocket = c.FormValue("cpocket")
+	req.Status = c.FormValue("status")
+	req.Location = c.FormValue("location")
 
-	if err := h.campaignRepository.Create(&req); err != nil {
+	// Parse float target_total
+	targetTotalStr := c.FormValue("target_total")
+	targetTotal, err := strconv.ParseFloat(targetTotalStr, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: "Invalid target_total"})
+	}
+	req.TargetTotal = targetTotal
+
+	// Parse start and end time
+	startStr := c.FormValue("start")
+	endStr := c.FormValue("end")
+	req.Start, err = time.Parse("2006-01-02", startStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: "Invalid start date"})
+	}
+	req.End, err = time.Parse("2006-01-02", endStr)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: "Invalid end date"})
+	}
+
+	// File upload
+	file, err := c.FormFile("photo")
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{Code: http.StatusBadRequest, Message: "Photo is required"})
+	}
+	src, _ := file.Open()
+	defer src.Close()
+
+	// Simpan file ke folder uploads (contoh)
+	filename := fmt.Sprintf("uploads/%d-%s", time.Now().Unix(), file.Filename)
+	dst, _ := os.Create(filename)
+	defer dst.Close()
+	if _, err := io.Copy(dst, src); err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{Code: http.StatusInternalServerError, Message: "Failed to save photo"})
+	}
+	req.Photo = filename
+
+	// Get user ID from context
+	userIDVal := c.Get("userLogin")
+	userID, ok := userIDVal.(int)
+	if !ok {
+		log.Println("userLogin not found or not an int")
+		return c.JSON(http.StatusUnauthorized, dto.ErrorResult{
+			Code:    http.StatusUnauthorized,
+			Message: "Unauthorized",
+		})
+	}
+	log.Println("Creating campaign for user ID:", userID)
+	req.UserID = userID
+
+	// Save to DB via models
+	newCampaign := models.Campaign{
+		Title:          req.Title,
+		Description:    req.Description,
+		Details:        req.Details,
+		Start:          req.Start,
+		End:            req.End,
+		CPocket:        req.CPocket,
+		Status:         req.Status,
+		Photo:          req.Photo,
+		TargetTotal:    req.TargetTotal,
+		Category:       req.Category,
+		Location:       req.Location,
+		UserID:         req.UserID,
+		TotalCollected: 0,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	if err := h.campaignRepository.Create(&newCampaign); err != nil {
 		log.Println("CreateCampaign Create error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
@@ -397,10 +476,7 @@ func (h *Handler) CreateCampaign(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusCreated, dto.SuccessResult{
-		Code: http.StatusCreated,
-		Data: req,
-	})
+	return c.JSON(http.StatusCreated, dto.SuccessResult{Code: http.StatusCreated, Data: newCampaign})
 }
 
 func (h *Handler) GetCampaignByID(c echo.Context) error {
@@ -428,6 +504,12 @@ func (h *Handler) GetCampaignByID(c echo.Context) error {
 		})
 	}
 
+	// Tambahkan baseURL ke photo
+	baseURL := c.Scheme() + "://" + c.Request().Host
+	if campaign.Photo != "" && !strings.HasPrefix(campaign.Photo, "http") {
+		campaign.Photo = baseURL + "/" + campaign.Photo
+	}
+
 	return c.JSON(http.StatusOK, dto.SuccessResult{
 		Code: http.StatusOK,
 		Data: campaign,
@@ -438,6 +520,53 @@ func (h *Handler) GetAllCampaigns(c echo.Context) error {
 	campaigns, err := h.campaignRepository.GetAll()
 	if err != nil {
 		log.Println("GetAllCampaigns GetAll error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to get campaigns",
+		})
+	}
+
+	baseURL := c.Scheme() + "://" + c.Request().Host
+
+	// Tambahkan full URL ke photo jika belum lengkap
+	for i, campaign := range campaigns {
+		if campaign.Photo != "" && !strings.HasPrefix(campaign.Photo, "http") {
+			campaigns[i].Photo = baseURL + "/" + campaign.Photo
+		}
+	}
+
+	var totalCollected float64
+	for _, c := range campaigns {
+		totalCollected += c.TotalCollected
+	}
+
+	totalTransactions, err := h.donationRepository.CountPaid()
+	if err != nil {
+		log.Println("GetAllCampaigns CountPaid error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to count paid donations",
+		})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{
+		Code: http.StatusOK,
+		Data: map[string]interface{}{
+			"campaigns":          campaigns,
+			"total_campaigns":    len(campaigns),
+			"total_collected":    totalCollected,
+			"total_transactions": totalTransactions,
+		},
+	})
+}
+
+func (h *Handler) GetCampaignsByFilters(c echo.Context) error {
+	category := c.QueryParam("category")
+	location := c.QueryParam("location")
+
+	campaigns, err := h.campaignRepository.GetByFilters(category, location)
+	if err != nil {
+		log.Println("GetCampaignsByFilters error:", err)
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
 			Code:    http.StatusInternalServerError,
 			Message: "Failed to get campaigns",
@@ -563,6 +692,29 @@ func (h *Handler) CreateDonation(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
 			Code:    http.StatusBadRequest,
 			Message: "Donation amount must be greater than zero",
+		})
+	}
+	// Check if campaign exists and hasn't reached its target
+	campaign, err := h.campaignRepository.GetByID(uint(req.CampaignID))
+	if err != nil {
+		log.Println("CreateDonation GetCampaign error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to get campaign",
+		})
+	}
+
+	if campaign == nil {
+		return c.JSON(http.StatusNotFound, dto.ErrorResult{
+			Code:    http.StatusNotFound,
+			Message: "Campaign not found",
+		})
+	}
+
+	if campaign.TotalCollected >= campaign.TargetTotal {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
+			Code:    http.StatusBadRequest,
+			Message: "Campaign has already reached its target",
 		})
 	}
 
@@ -796,10 +948,80 @@ func (h *Handler) HandlePaymentNotification(c echo.Context) error {
 				Message: "Failed to update donation status",
 			})
 		}
+
+		campaign, err := h.campaignRepository.GetByID(uint(donation.CampaignID))
+		if err != nil {
+			log.Println("HandlePaymentNotification GetCampaign error:", err)
+			return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+				Code:    http.StatusInternalServerError,
+				Message: "Failed to get campaign",
+			})
+		}
+
+		campaign.TotalCollected += donation.Amount
+		if err := h.campaignRepository.Update(campaign); err != nil {
+			log.Println("HandlePaymentNotification UpdateCampaign error:", err)
+			return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+				Code:    http.StatusInternalServerError,
+				Message: "Failed to update campaign total",
+			})
+		}
 	}
 
 	return c.JSON(http.StatusOK, dto.SuccessResult{
 		Code: http.StatusOK,
 		Data: "Notification processed successfully",
+	})
+}
+
+func (h *Handler) GetDonationSummary(c echo.Context) error {
+	count, err := h.donationRepository.CountPaid()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    500,
+			Message: "Failed to count donations",
+		})
+	}
+
+	total, err := h.donationRepository.SumPaidAmount()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    500,
+			Message: "Failed to sum donation amount",
+		})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{
+		Code: http.StatusOK,
+		Data: map[string]interface{}{
+			"total_transactions": count,
+			"total_amount":       total,
+		},
+	})
+}
+func (h *Handler) GetDonationCountByCampaign(c echo.Context) error {
+	campaignID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
+			Code:    http.StatusBadRequest,
+			Message: "Invalid campaign ID format",
+		})
+	}
+
+	count, err := h.donationRepository.CountByCampaign(uint(campaignID))
+	if err != nil {
+		log.Println("GetDonationCountByCampaign CountByCampaign error:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to count donations for campaign",
+		})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{
+		Code: http.StatusOK,
+		Data: map[string]interface{}{
+			"campaign_id": uint(campaignID),
+			"count":       count,
+		},
 	})
 }

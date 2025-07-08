@@ -90,6 +90,7 @@ type CampaignRepository interface {
 	Update(campaign *models.Campaign) error
 	Delete(id uint) error
 	GetDonations(campaignID uint) ([]models.Donation, error)
+	GetByFilters(category, location string) ([]models.Campaign, error)
 }
 
 type campaignRepository struct {
@@ -107,6 +108,23 @@ func (r *campaignRepository) Create(campaign *models.Campaign) error {
 func (r *campaignRepository) GetAll() ([]models.Campaign, error) {
 	var campaigns []models.Campaign
 	err := r.db.Preload("User").Preload("Donations").Find(&campaigns).Error
+	return campaigns, err
+}
+
+// Add this method for filtering
+func (r *campaignRepository) GetByFilters(category, location string) ([]models.Campaign, error) {
+	var campaigns []models.Campaign
+	query := r.db.Preload("User").Preload("Donations")
+
+	if category != "" {
+		query = query.Where("category = ?", category)
+	}
+
+	if location != "" {
+		query = query.Where("location LIKE ?", "%"+location+"%")
+	}
+
+	err := query.Find(&campaigns).Error
 	return campaigns, err
 }
 
@@ -142,6 +160,10 @@ type DonationRepository interface {
 	Update(donation *models.Donation) error
 	Delete(id uint) error
 	GetByCampaign(campaignID uint) ([]models.Donation, error)
+	CountAll() (int64, error)
+	CountPaid() (int64, error)
+	SumPaidAmount() (float64, error)
+	CountByCampaign(campaignID uint) (int64, error)
 }
 
 type donationRepository struct {
@@ -183,4 +205,37 @@ func (r *donationRepository) GetByCampaign(campaignID uint) ([]models.Donation, 
 	var donations []models.Donation
 	err := r.db.Where("campaign_id = ?", campaignID).Preload("User").Find(&donations).Error
 	return donations, err
+}
+
+func (r *donationRepository) CountAll() (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Donation{}).Count(&count).Error
+	return count, err
+}
+
+func (r *donationRepository) CountPaid() (int64, error) {
+	var count int64
+	err := r.db.
+		Model(&models.Donation{}).
+		Where("status = ?", "paid").
+		Count(&count).Error
+	return count, err
+}
+
+func (r *donationRepository) SumPaidAmount() (float64, error) {
+	var total float64
+	err := r.db.
+		Model(&models.Donation{}).
+		Select("SUM(amount)").
+		Where("status = ?", "paid").
+		Scan(&total).Error
+	return total, err
+}
+
+func (r *donationRepository) CountByCampaign(campaignID uint) (int64, error) {
+	var count int64
+	err := r.db.Model(&models.Donation{}).
+		Where("campaign_id = ?", campaignID).
+		Count(&count).Error
+	return count, err
 }

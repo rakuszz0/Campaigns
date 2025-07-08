@@ -1,4 +1,3 @@
-// File: src/context/userContext.js
 import { createContext, useReducer } from "react";
 
 export const UserContext = createContext();
@@ -17,8 +16,12 @@ const userReducer = (state, action) => {
       localStorage.setItem("token", payload.token);
       return {
         isLogin: true,
-        user: payload,
+        user: {
+          ...payload,
+          isAdmin: payload.isAdmin, // pastikan tetap di dalam user
+        },
       };
+
     case "AUTH_ERROR":
     case "LOGOUT":
       localStorage.removeItem("token");
@@ -26,6 +29,7 @@ const userReducer = (state, action) => {
         isLogin: false,
         user: {},
       };
+
     default:
       return state;
   }

@@ -42,8 +42,8 @@ func main() {
 	// Serve static files (uploads folder)
 	e.Static("/uploads", "uploads")
 
-	// Initialize routes
-	e = routes.InitRouter(mysql.DB)
+	// Initialize routes using existing echo instance
+	routes.InitRouter(e, mysql.DB)
 
 	// Get port from .env or fallback
 	port := os.Getenv("PORT")

@@ -26,7 +26,7 @@ export default function SignInModal({ show, onHide, openSignUp }) {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("Login response:", data); // Tambahkan log ini dulu
+      console.log("Login response:", data);
 
 
   localStorage.setItem("token", data.data.token); 

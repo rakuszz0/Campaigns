@@ -19,4 +19,5 @@ type DonationResponse struct {
 	CampaignID int       `json:"campaign_id"`
 	Campaign   string    `json:"campaign"`
 	CreatedAt  time.Time `json:"created_at"`
+	PaymentURL string    `json:"payment_url,omitempty"`
 }

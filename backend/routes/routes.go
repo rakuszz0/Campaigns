@@ -15,10 +15,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitRouter(db *gorm.DB) *echo.Echo {
-	e := echo.New()
+// PERBAIKAN: menerima e dari main.go, bukan bikin baru
+func InitRouter(e *echo.Echo, db *gorm.DB) {
+	// (hapus e := echo.New())
 
-	// Middleware
+	// Tambahkan middleware lagi kalau mau, tapi tidak wajib karena sudah di main.go
 	e.Use(echoMiddleware.Logger())
 	e.Use(echoMiddleware.Recover())
 	e.Use(echoMiddleware.CORS())
@@ -26,20 +27,20 @@ func InitRouter(db *gorm.DB) *echo.Echo {
 	// Initialize Midtrans
 	midtrans.Init()
 
-	// Initialize Repositories
+	// Repositories
 	userRepo := repositories.NewUserRepository(db)
 	campaignRepo := repositories.NewCampaignRepository(db)
 	donationRepo := repositories.NewDonationRepository(db)
 
-	// Initialize Services
+	// Services
 	paymentService := services.NewPaymentService()
 
-	// Initialize Handler
+	// Handlers
 	handler := handlers.NewHandler(userRepo, campaignRepo, donationRepo, paymentService)
 
 	// API Routes
 	api := e.Group("/api/v1")
-	// check authentication
+
 	api.GET("/check-auth", middleware.Auth(handler.CheckAuth))
 
 	api.POST("/verify-password", func(c echo.Context) error {
@@ -58,11 +59,11 @@ func InitRouter(db *gorm.DB) *echo.Echo {
 			"hash":     req.Hash,
 		})
 	})
-	// Auth Routes (clear separation)
-	api.POST("/signup", handler.CreateUser) // Register
-	api.POST("/signin", handler.SignIn)     // Login
 
-	// User Routes
+	api.POST("/signup", handler.CreateUser)
+	api.POST("/signin", handler.SignIn)
+
+	// User routes
 	userRoutes := api.Group("/users")
 	{
 		userRoutes.POST("", handler.CreateUser)
@@ -72,18 +73,19 @@ func InitRouter(db *gorm.DB) *echo.Echo {
 		userRoutes.DELETE("/:id", handler.DeleteUser)
 	}
 
-	// Campaign Routes
+	// Campaign routes
 	campaignRoutes := api.Group("/campaigns")
 	{
-		campaignRoutes.POST("", handler.CreateCampaign)
+		campaignRoutes.POST("/add", middleware.Auth(handler.CreateCampaign))
 		campaignRoutes.GET("", handler.GetAllCampaigns)
+		campaignRoutes.GET("/filter", handler.GetCampaignsByFilters)
 		campaignRoutes.GET("/:id", handler.GetCampaignByID)
-		campaignRoutes.PUT("/:id", handler.UpdateCampaign)
+		campaignRoutes.PUT("edit/:id", handler.UpdateCampaign)
 		campaignRoutes.DELETE("/:id", handler.DeleteCampaign)
 		campaignRoutes.GET("/:id/donations", handler.GetDonationsByCampaign)
 	}
 
-	// Donation Routes
+	// Donation routes
 	donationRoutes := api.Group("/donations")
 	{
 		donationRoutes.POST("", handler.CreateDonation)
@@ -93,7 +95,6 @@ func InitRouter(db *gorm.DB) *echo.Echo {
 		donationRoutes.DELETE("/:id", handler.DeleteDonation)
 		donationRoutes.GET("/by-campaign/:id", handler.GetByCampaign)
 		donationRoutes.POST("/notifications", handler.HandlePaymentNotification)
+		donationRoutes.GET("/summary", handler.GetDonationSummary)
 	}
-
-	return e
 }

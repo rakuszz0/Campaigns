@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
 
 const AboutUs = () => {
   return (
@@ -27,11 +26,7 @@ const AboutUs = () => {
             Kini, kami menghadirkan platform donasi online berbasis website agar semua proses dapat dilakukan lebih mudah, transparan, dan efisien. Website ini memungkinkan siapa saja, 
             dari mana saja, untuk berdonasi dan ikut serta dalam membangun kebaikan bersama.
           </p>
-          <div className="text-center md:text-left">
-            <button className="bg-green-700 text-white py-3 px-6 rounded-lg hover:bg-green-800 transition duration-300 shadow-md hover:shadow-lg">
-              Join Our Mission
-            </button>
-          </div>
+
         </div>
 
         {/* Image Section */}

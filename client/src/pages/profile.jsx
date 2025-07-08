@@ -2,7 +2,7 @@ import React, { useState, useContext, useMemo } from "react";
 import { UserContext } from "../context/userContext";
 import { useQuery } from "@tanstack/react-query";
 import { API } from "../config/api";
-import { Image, Button } from "react-bootstrap";
+import { Image, Button, Spinner, Alert } from "react-bootstrap";
 import { 
   HiUserCircle, 
   HiMail 
@@ -11,7 +11,6 @@ import {
   MdLocationPin,
   MdLock,
   MdLocalPhone,
-  MdPersonPinCircle
 } from "react-icons/md";
 import { TbGenderBigender } from "react-icons/tb";
 import ChangePassword from "../components/ChangePassword";
@@ -22,15 +21,56 @@ export default function Profile() {
   const [state] = useContext(UserContext);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showChangeImage, setShowChangeImage] = useState(false);
-  const userId = useMemo(() => state.user.id, [state.user.id]);
-
-  const { data: userProfile } = useQuery({
+  const userId = useMemo(() => state.user?.id, [state.user?.id]);
+// Tambahkan ini di komponen Profile untuk melihat data yang tersedia
+console.log("User data from context:", state.user);
+  const { 
+    data: userProfile, 
+    isLoading, 
+    isError,
+    error 
+  } = useQuery({
     queryKey: ["userProfileCache", userId],
     queryFn: async () => {
-      const res = await API.get(`/user/${userId}`);
-      return res.data.data;
-    }
+      console.log("Fetching user profile for ID:", userId);
+      try {
+        const res = await API.get(`/users/${userId}`);
+        console.log("User profile data data data:", res.data.data);
+        return res.data.data;
+      } catch (err) {
+        // Return default user data if API fails
+        console.error("API Error:", err);
+        return {
+          ...state.user,
+          image: null
+        };
+      }
+    },
+    enabled: !!userId // Only run query if userId exists
   });
+
+ const displayData = useMemo(() => ({
+    ...state.user,  
+    ...userProfile
+  }), [state.user, userProfile]);
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "50vh" }}>
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "50vh" }}>
+        <Alert variant="danger">
+          Failed to load profile: {error.message}
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-container bg-light">
@@ -46,7 +86,7 @@ export default function Profile() {
               <div className="info-item">
                 <HiUserCircle className="info-icon" />
                 <div>
-                  <p className="info-value">{state.user.name}</p>
+                  <p className="info-value">{displayData?.name || "Not provided"}</p>
                   <small className="info-label">Full name</small>
                 </div>
               </div>
@@ -54,7 +94,7 @@ export default function Profile() {
               <div className="info-item">
                 <HiMail className="info-icon" />
                 <div>
-                  <p className="info-value">{state.user.email}</p>
+                  <p className="info-value">{displayData?.email || "Not provided"}</p>
                   <small className="info-label">Email</small>
                 </div>
               </div>
@@ -70,20 +110,12 @@ export default function Profile() {
                   </p>
                   <small className="info-label">Password</small>
                 </div>
-              </div>
-              
-              <div className="info-item">
-                <MdPersonPinCircle className="info-icon" />
-                <div>
-                  <p className="info-value">{state.user.list_as_role}</p>
-                  <small className="info-label">Status</small>
-                </div>
-              </div>
+              </div>            
               
               <div className="info-item">
                 <TbGenderBigender className="info-icon" />
                 <div>
-                  <p className="info-value">{state.user.gender || "Not specified"}</p>
+                  <p className="info-value">{displayData?.gender || "Not specified"}</p>
                   <small className="info-label">Gender</small>
                 </div>
               </div>
@@ -91,7 +123,7 @@ export default function Profile() {
               <div className="info-item">
                 <MdLocalPhone className="info-icon" />
                 <div>
-                  <p className="info-value">{state.user.phone || "Not provided"}</p>
+                  <p className="info-value">{displayData?.phone || "Not provided"}</p>
                   <small className="info-label">Phone</small>
                 </div>
               </div>
@@ -99,7 +131,7 @@ export default function Profile() {
               <div className="info-item">
                 <MdLocationPin className="info-icon" />
                 <div>
-                  <p className="info-value">{state.user.address || "Not provided"}</p>
+                  <p className="info-value">{displayData?.address || "Not provided"}</p>
                   <small className="info-label">Address</small>
                 </div>
               </div>
@@ -108,9 +140,9 @@ export default function Profile() {
             {/* Right Side - Profile Image */}
             <div className="profile-image-section">
               <div className="image-wrapper">
-                {userProfile?.image ? (
+                {displayData?.photo ? (
                   <Image 
-                    src={userProfile.image} 
+                    src={displayData.photo} 
                     className="profile-image"
                     alt="Profile"
                   />

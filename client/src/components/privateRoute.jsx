@@ -7,5 +7,8 @@ export default function PrivateRoute() {
 
   if (!state.isLogin) return <Navigate to="/" />;
 
-  return !state.user.isAdmin !== "Admin" ? <Outlet /> : <Navigate to="/admin/dashboard" />;
+  // Jika admin, arahkan ke dashboard admin
+  // if (state.user.is_admin === true) return <Navigate to="/admin/dashboard" />;
+
+  return <Outlet />;
 }
