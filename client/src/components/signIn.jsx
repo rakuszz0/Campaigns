@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Modal, Form, Button, Alert } from "react-bootstrap";
 import { useMutation } from "@tanstack/react-query";
 import { API } from "../config/api";
-// import { FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
 import ForgotPasswordModal from "./ForgotPassword";
 
 export default function SignInModal({ show, onHide, openSignUp }) {
@@ -26,11 +25,9 @@ export default function SignInModal({ show, onHide, openSignUp }) {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("Login response:", data);
-
-
-  localStorage.setItem("token", data.data.token); 
-  window.location.reload();
+      localStorage.setItem("token", data.data.token); 
+      onHide();
+      window.location.reload();
     },
     onError: (error) => {
       setMessage(error.response?.data?.message || "Login failed");
@@ -41,14 +38,15 @@ export default function SignInModal({ show, onHide, openSignUp }) {
     <>
       <Modal 
         show={show} 
-        onHide={onHide}
+        onHide={() => {onHide();}}
         centered
+        backdrop={showForgotPassword ? false : "static"}
         style={{
           position: 'fixed',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          zIndex: 1060
+          zIndex: showForgotPassword ? 1050 : 1060
         }}
       >
         <Modal.Body style={{
@@ -83,15 +81,14 @@ export default function SignInModal({ show, onHide, openSignUp }) {
             
             <Form.Group style={{ marginBottom: '1rem' }}>
               <Form.Control
-              id="password"
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              required
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                required
               />
-
             </Form.Group>
 
             <div style={{
@@ -114,10 +111,7 @@ export default function SignInModal({ show, onHide, openSignUp }) {
                   cursor: 'pointer',
                   fontSize: '0.875rem'
                 }}
-                onClick={() => {
-                  onHide();
-                  setShowForgotPassword(true);
-                }}
+                onClick={() => setShowForgotPassword(true)}
               >
                 Lupa Password?
               </button>
@@ -134,50 +128,10 @@ export default function SignInModal({ show, onHide, openSignUp }) {
                 borderRadius: '4px',
                 color: 'white'
               }}
+              disabled={handleSubmit.isLoading}
             >
-              Masuk
+              {handleSubmit.isLoading ? 'Memproses...' : 'Masuk'}
             </Button>
-
-            <div style={{
-              textAlign: 'center',
-              marginBottom: '1rem',
-              position: 'relative',
-              borderBottom: '1px solid #dee2e6',
-              height: '1px'
-            }}>
-              <span style={{
-                position: 'absolute',
-                top: '-0.5rem',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                backgroundColor: 'white',
-                padding: '0 0.5rem',
-                fontSize: '0.875rem'
-              }}>
-                {/* ATAU */}
-              </span>
-            </div>
-{/* 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <Button 
-                variant="outline-danger" 
-                style={{ width: '100%', marginBottom: '0.5rem' }}
-              >
-                <FaGoogle style={{ marginRight: '0.5rem' }} /> Masuk dengan Google
-              </Button>
-              <Button 
-                variant="outline-primary" 
-                style={{ width: '100%', marginBottom: '0.5rem' }}
-              >
-                <FaFacebook style={{ marginRight: '0.5rem' }} /> Masuk dengan Facebook
-              </Button>
-              <Button 
-                variant="outline-dark" 
-                style={{ width: '100%' }}
-              >
-                <FaApple style={{ marginRight: '0.5rem' }} /> Masuk dengan Apple ID
-              </Button>
-            </div> */}
 
             <div style={{ textAlign: 'center', fontSize: '0.875rem' }}>
               Belum punya akun?{" "}
@@ -208,8 +162,8 @@ export default function SignInModal({ show, onHide, openSignUp }) {
         onHide={() => setShowForgotPassword(false)}
         openSignIn={() => {
           setShowForgotPassword(false);
-          onHide();
         }}
+        zIndex={1060}
       />
     </>
   );

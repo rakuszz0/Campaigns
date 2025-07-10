@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { API } from "../config/api";
+import "./ChangeImage.css";
 
 export default function ChangeImageModal({ show, onHide }) {
   const [image, setImage] = useState(null);
@@ -48,24 +49,26 @@ export default function ChangeImageModal({ show, onHide }) {
       centered
       backdrop="static"
       keyboard={false}
+      className="change-image-modal"
     >
-      <Modal.Header closeButton>
-        <Modal.Title>Change Profile Image</Modal.Title>
+      <Modal.Header closeButton className="modal-header">
+        <Modal.Title className="modal-title">Change Profile Image</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="modal-body">
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formFile" className="mb-3">
-            <Form.Label>Select New Image</Form.Label>
+          <Form.Group controlId="formFile" className="mb-4 form-group">
+            <Form.Label className="form-label">Select New Image</Form.Label>
             <Form.Control 
               type="file" 
               accept="image/*" 
               onChange={handleChange} 
               required 
+              className="form-control"
             />
           </Form.Group>
           <Button 
             type="submit" 
-            className="w-100"
+            className="submit-button"
             disabled={isLoading}
           >
             {isLoading ? "Uploading..." : "Upload"}

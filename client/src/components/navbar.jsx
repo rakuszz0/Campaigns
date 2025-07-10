@@ -7,25 +7,23 @@ import { UserContext } from "../context/userContext";
 import { setAuthToken } from "../config/api";
 import { API } from "../config/api";
 
-// Data untuk halaman statis
 const staticPages = [
   {
     id: 'vision-mission',
     title: 'Vision & Mission',
-    content: 'Our vision is to create a better world through charitable acts. Our mission is to connect donors with those in need through transparent campaigns.',
+    content: 'Our vision is to create a better world...',
     path: '/vision-mission'
   },
   {
     id: 'about-us',
     title: 'About Us',
-    content: 'AmalSAS.id is a non-profit organization dedicated to helping those in need through various charitable campaigns and programs.',
+    content: 'AmalSAS.id is a non-profit...',
     path: '/about-us'
   }
 ];
 
 export default function Navbar() {
-  const [showSignIn, setShowSignIn] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
+  const [activeModal, setActiveModal] = useState(null); // 'signin' | 'signup' | null
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [campaigns, setCampaigns] = useState([]);
@@ -34,7 +32,6 @@ export default function Navbar() {
   const [state, dispatch] = useContext(UserContext);
   const isAdmin = state.user?.isAdmin;
 
-  // Ambil data campaign untuk pencarian
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
@@ -47,7 +44,6 @@ export default function Navbar() {
         console.error("Gagal mengambil data campaign:", error.message);
       }
     };
-
     fetchCampaigns();
   }, []);
 
@@ -55,29 +51,25 @@ export default function Navbar() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    // Cari di kampanye
-    const foundCampaigns = campaigns.filter(campaign => 
-      campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      campaign.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const foundCampaigns = campaigns.filter(c =>
+      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const foundPages = staticPages.filter(p =>
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.content.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Cari di halaman statis
-    const foundPages = staticPages.filter(page => 
-      page.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      page.content.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    // Navigasi ke halaman hasil pencarian dengan state
-    navigate('/search-results', { 
-      state: { 
+    navigate('/search-results', {
+      state: {
         query: searchQuery,
         campaigns: foundCampaigns,
-        pages: foundPages 
-      } 
+        pages: foundPages
+      }
     });
 
     setSearchQuery('');
-    setIsMenuOpen(false); // Tutup mobile menu setelah search
+    setIsMenuOpen(false);
   };
 
   const handleLogout = () => {
@@ -89,30 +81,27 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar-container">
-        {/* Brand */}
         <div className="navbar-brand">
           <img src={SAS} alt="Logo" className="navbar-logo" />
-          <Link to="/" className="navbar-brand-text">AmalSAS.id</Link>
+          <Link to="/" className="navbar-brand-text" onClick={() => setActiveModal(null)}>AmalSAS.id</Link>
         </div>
 
-        {/* Search */}
         {!isAdmin && (
           <form className="navbar-search" onSubmit={handleSearch}>
-            <input 
-              type="text" 
-              placeholder="Cari program atau halaman" 
-              className="search-input" 
+            <input
+              type="text"
+              placeholder="Cari program atau halaman"
+              className="search-input"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <button type="submit" className="search-button">🔍</button>
           </form>
-        )}  
+        )}
 
-        {/* Desktop links */}
         <div className="navbar-links">
-          <Link to="/vision-mission" className="nav-link">Vision & Mission</Link>
-          <Link to="/about-us" className="nav-link">About Us</Link>
+          <Link to="/vision-mission" className="nav-link" onClick={() => setActiveModal(null)}>Vision & Mission</Link>
+          <Link to="/about-us" className="nav-link" onClick={() => setActiveModal(null)}>About Us</Link>
 
           {state.isLogin ? (
             <>
@@ -136,30 +125,31 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <button className="auth-button masuk" onClick={() => setShowSignIn(true)}>MASUK</button>
-              <button className="auth-button daftar" onClick={() => setShowSignUp(true)}>DAFTAR</button>
+              <button className="auth-button masuk" onClick={() => setActiveModal('signin')}>MASUK</button>
+              <button className="auth-button daftar" onClick={() => setActiveModal('signup')}>DAFTAR</button>
             </>
           )}
         </div>
 
-        {/* Hamburger */}
         <div className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? '✕' : '☰'}
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="mobile-menu">
-            <form className="mobile-search" onSubmit={handleSearch}>
-              <input 
-                type="text" 
-                placeholder="Cari program atau halaman" 
-                className="mobile-search-input" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button type="submit" className="mobile-search-button">🔍</button>
-            </form>
+            {!isAdmin && (
+              <form className="mobile-search" onSubmit={handleSearch}>
+                <input
+                  type="text"
+                  placeholder="Cari program atau halaman"
+                  className="mobile-search-input"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit" className="mobile-search-button">🔍</button>
+              </form>
+            )}
 
             <Link to="/vision-mission" className="mobile-link" onClick={() => setIsMenuOpen(false)}>Vision & Mission</Link>
             <Link to="/about-us" className="mobile-link" onClick={() => setIsMenuOpen(false)}>About Us</Link>
@@ -186,33 +176,25 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <button className="mobile-button masuk" onClick={() => { setShowSignIn(true); setIsMenuOpen(false); }}>MASUK</button>
-                <button className="mobile-button daftar" onClick={() => { setShowSignUp(true); setIsMenuOpen(false); }}>DAFTAR</button>
+                <button className="mobile-button masuk" onClick={() => { setActiveModal('signin'); setIsMenuOpen(false); }}>MASUK</button>
+                <button className="mobile-button daftar" onClick={() => { setActiveModal('signup'); setIsMenuOpen(false); }}>DAFTAR</button>
               </>
             )}
           </div>
         )}
       </nav>
 
-      {/* Modals */}
       <SignInModal
-        show={showSignIn}
-        onHide={() => setShowSignIn(false)}
-        openSignUp={() => {
-          setShowSignIn(false);
-          setShowSignUp(true);
-        }}
+        show={activeModal === 'signin'}
+        onHide={() => setActiveModal(null)}
+        openSignUp={() => setActiveModal('signup')}
       />
       <SignUpModal
-        show={showSignUp}
-        onHide={() => setShowSignUp(false)}
-        openSignIn={() => {
-          setShowSignUp(false);
-          setShowSignIn(true);
-        }}
+        show={activeModal === 'signup'}
+        onHide={() => setActiveModal(null)}
+        openSignIn={() => setActiveModal('signin')}
       />
 
-      {/* Styles */}
       <style jsx="true">{`
         .navbar-container {
           display: flex;

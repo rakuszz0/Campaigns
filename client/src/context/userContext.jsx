@@ -18,7 +18,7 @@ const userReducer = (state, action) => {
         isLogin: true,
         user: {
           ...payload,
-          isAdmin: payload.isAdmin, // pastikan tetap di dalam user
+          isAdmin: payload.isAdmin,
         },
       };
 

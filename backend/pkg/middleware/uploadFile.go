@@ -1,78 +1,67 @@
 package middleware
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/labstack/echo/v4"
 )
 
-// Result is a struct for API responses
 type Result struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
-// Define a custom context key type
-type contextKey string
-
-const dataFileKey contextKey = "dataFile"
-
-// UploadFile is a middleware to handle file uploads
-func UploadFile(next http.HandlerFunc, formImage string) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func UploadFile(next echo.HandlerFunc, formImage string) echo.HandlerFunc {
+	return func(c echo.Context) error {
 		const MAX_UPLOAD_SIZE = 10 << 20 // 10MB
 
-		// Check file size
-		r.Body = http.MaxBytesReader(w, r.Body, MAX_UPLOAD_SIZE)
+		// Limit size
+		c.Request().Body = http.MaxBytesReader(c.Response(), c.Request().Body, MAX_UPLOAD_SIZE)
 
-		err := r.ParseMultipartForm(MAX_UPLOAD_SIZE)
+		err := c.Request().ParseMultipartForm(MAX_UPLOAD_SIZE)
 		if err != nil {
-			http.Error(w, "File too large", http.StatusBadRequest)
-			return
+			return c.JSON(http.StatusBadRequest, Result{
+				Code:    http.StatusBadRequest,
+				Message: "File too large",
+			})
 		}
 
-		file, _, err := r.FormFile(formImage)
+		file, _, err := c.Request().FormFile(formImage)
 		if err != nil {
-			fmt.Println(err)
-			json.NewEncoder(w).Encode(Result{
+			fmt.Println("FormFile error:", err)
+			return c.JSON(http.StatusBadRequest, Result{
 				Code:    http.StatusBadRequest,
 				Message: "Error retrieving the file",
 			})
-			return
 		}
 		defer file.Close()
 
 		tempFile, err := os.CreateTemp("uploads", "image-*.png")
 		if err != nil {
-			fmt.Println("Path upload error:", err)
-			json.NewEncoder(w).Encode(Result{
+			fmt.Println("Temp file error:", err)
+			return c.JSON(http.StatusInternalServerError, Result{
 				Code:    http.StatusInternalServerError,
 				Message: "Failed to create temp file",
 			})
-			return
 		}
 		defer tempFile.Close()
 
 		_, err = io.Copy(tempFile, file)
 		if err != nil {
-			fmt.Println("Error saving file:", err)
-			json.NewEncoder(w).Encode(Result{
+			fmt.Println("Copy error:", err)
+			return c.JSON(http.StatusInternalServerError, Result{
 				Code:    http.StatusInternalServerError,
 				Message: "Failed to save file",
 			})
-			return
 		}
 
-		// Extract filename only
-		data := tempFile.Name()
-		filename := data[8:] // strip "uploads/"
+		filename := tempFile.Name()[8:] // remove "uploads/"
+		c.Set("dataFile", filename)
 
-		// Add filename to context
-		ctx := context.WithValue(r.Context(), dataFileKey, filename)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+		return next(c)
+	}
 }

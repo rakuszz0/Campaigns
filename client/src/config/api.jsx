@@ -18,6 +18,5 @@ export const setAuthToken = (token) => {
 export const getImageUrl = (photo) => {
   if (!photo) return "https://via.placeholder.com/600x400?text=No+Image";
   if (photo.startsWith("http")) return photo;
-  if (!photo.startsWith("/")) photo = "/" + photo;
-  return `${IMAGE_BASE_URL}${photo}`;
+  return `${IMAGE_BASE_URL}/uploads/${photo}`;
 };

@@ -3,6 +3,7 @@ import { Modal, Form, Button, Alert, Spinner } from "react-bootstrap";
 import { useMutation } from '@tanstack/react-query';
 import { API } from "../config/api";
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaHome } from "react-icons/fa";
+import './SignUp.css';
 
 export default function SignUpModal({ show, onHide, openSignIn }) {
   const [message, setMessage] = useState(null);
@@ -17,7 +18,6 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
     password: ""
   });
 
-  // Ref ke form DOM element untuk validasi manual
   const formRef = useRef(null);
 
   const handleChange = (e) => {
@@ -35,14 +35,13 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
         phone: form.phone.startsWith('+') ? form.phone.replace(/\s+/g, '') : `+${form.phone.replace(/\s+/g, '')}`,
         is_admin: false
       };
-      console.log("Submitting payload:", payload);
       const response = await API.post("/signup", payload);
       return response.data;
     },
     onSuccess: () => {
       setMessage({
         type: 'success',
-        text: 'Registration successful! Redirecting to login...'
+        text: 'Registrasi berhasil! Mengarahkan ke halaman login...'
       });
       setTimeout(() => {
         onHide();
@@ -50,10 +49,9 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
       }, 2000);
     },
     onError: (error) => {
-      console.error("Registration error:", error);
       setMessage({
         type: 'error',
-        text: error.response?.data?.message || "Registration failed. Please try again."
+        text: error.response?.data?.message || "Registrasi gagal. Silakan coba lagi."
       });
     }
   });
@@ -63,54 +61,37 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
     e.stopPropagation();
 
     const formElement = formRef.current;
-    console.log("Form validity:", formElement.checkValidity());
-    console.log("Form state:", form);
-
     if (!formElement.checkValidity()) {
       setValidated(true);
       return;
     }
 
-    setValidated(true); // Trigger valid feedback
+    setValidated(true);
     mutate();
   };
 
   return (
     <Modal 
       show={show} 
-      onHide={onHide} 
+      onHide={() => {
+        onHide();}} 
       centered
       backdrop="static"
       size="md"
-      style={{ 
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 9999
-      }}
-      onExited={() => setValidated(false)}
+      className="signup-modal"
     >
-      <Modal.Header closeButton style={{ border: 'none' }}>
+      <Modal.Header closeButton className="modal-header">
         <Modal.Title className="w-100 text-center">
-          <h3 style={{ color: '#198754', fontWeight: 700 }}>
-            Create Donor Account
-          </h3>
-          <p style={{ color: '#6c757d', fontSize: '0.9rem' }}>
-            Join our community to make a difference
-          </p>
+          <h3 className="modal-title">Buat Akun Donatur</h3>
+          <p className="modal-subtitle">Bergabung dengan komunitas kami untuk membuat perubahan</p>
         </Modal.Title>
       </Modal.Header>
       
-      <Modal.Body style={{ 
-        padding: '0 2rem 2rem',
-        maxHeight: '80vh',
-        overflowY: 'auto'
-      }}>
+      <Modal.Body className="modal-body">
         {message && (
           <Alert 
             variant={message.type === 'success' ? 'success' : 'danger'}
-            className="text-center"
+            className="alert-message"
           >
             {message.text}
           </Alert>
@@ -121,12 +102,13 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
           validated={validated}
           onSubmit={handleSubmit}
           ref={formRef}
+          className="signup-form"
         >
-          <div className="d-flex gap-3 mb-3">
-            <Form.Group className="flex-fill">
+          <div className="name-fields">
+            <Form.Group className="form-group">
               <Form.Label>
-                <FaUser className="me-2 text-secondary" />
-                First Name
+                <FaUser className="icon" />
+                Nama Depan
               </Form.Label>
               <Form.Control
                 required
@@ -137,17 +119,16 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
                 minLength={2}
                 maxLength={50}
                 placeholder="John"
-                style={{ borderRadius: '8px', padding: '10px' }}
               />
               <Form.Control.Feedback type="invalid">
-                Please provide a valid first name (2-50 characters)
+                Harap masukkan nama depan yang valid (2-50 karakter)
               </Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group className="flex-fill">
+            <Form.Group className="form-group">
               <Form.Label>
-                <FaUser className="me-2 text-secondary" />
-                Last Name
+                <FaUser className="icon" />
+                Nama Belakang
               </Form.Label>
               <Form.Control
                 required
@@ -158,17 +139,16 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
                 minLength={2}
                 maxLength={50}
                 placeholder="Doe"
-                style={{ borderRadius: '8px', padding: '10px' }}
               />
               <Form.Control.Feedback type="invalid">
-                Please provide a valid last name (2-50 characters)
+                Harap masukkan nama belakang yang valid (2-50 karakter)
               </Form.Control.Feedback>
             </Form.Group>
           </div>
 
-          <Form.Group className="mb-3">
+          <Form.Group className="form-group">
             <Form.Label>
-              <FaUser className="me-2 text-secondary" />
+              <FaUser className="icon" />
               Username
             </Form.Label>
             <Form.Control
@@ -181,16 +161,15 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
               maxLength={20}
               pattern="[a-zA-Z0-9]+"
               placeholder="johndoe123"
-              style={{ borderRadius: '8px', padding: '10px' }}
             />
             <Form.Control.Feedback type="invalid">
-              3-20 alphanumeric characters only
+              3-20 karakter alfanumerik saja
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group className="form-group">
             <Form.Label>
-              <FaEnvelope className="me-2 text-secondary" />
+              <FaEnvelope className="icon" />
               Email
             </Form.Label>
             <Form.Control
@@ -201,17 +180,16 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
               onChange={handleChange}
               maxLength={100}
               placeholder="john@example.com"
-              style={{ borderRadius: '8px', padding: '10px' }}
             />
             <Form.Control.Feedback type="invalid">
-              Please provide a valid email
+              Harap masukkan email yang valid
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group className="form-group">
             <Form.Label>
-              <FaPhone className="me-2 text-secondary" />
-              Phone (E.164 format)
+              <FaPhone className="icon" />
+              Nomor Telepon
             </Form.Label>
             <Form.Control
               required
@@ -221,19 +199,18 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
               onChange={handleChange}
               pattern="^\+[1-9]\d{1,14}$"
               placeholder="+6281234567890"
-              style={{ borderRadius: '8px', padding: '10px' }}
             />
-            <Form.Text muted className="ms-1">
-              Example: +6281234567890
+            <Form.Text className="form-text">
+              Contoh: +6281234567890
             </Form.Text>
             <Form.Control.Feedback type="invalid">
-              Please provide a valid phone number
+              Harap masukkan nomor telepon yang valid
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="mb-3">
+          <Form.Group className="form-group">
             <Form.Label>
-              <FaLock className="me-2 text-secondary" />
+              <FaLock className="icon" />
               Password
             </Form.Label>
             <Form.Control
@@ -245,21 +222,20 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
               minLength={8}
               maxLength={72}
               pattern="^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9]).*$"
-              placeholder="At least 8 characters"
-              style={{ borderRadius: '8px', padding: '10px' }}
+              placeholder="Minimal 8 karakter"
             />
-            <Form.Text muted className="ms-1">
-              Must contain uppercase, number, and special character
+            <Form.Text className="form-text">
+              Harus mengandung huruf besar, angka, dan karakter khusus
             </Form.Text>
             <Form.Control.Feedback type="invalid">
-              Password must meet complexity requirements
+              Password harus memenuhi persyaratan kompleksitas
             </Form.Control.Feedback>
           </Form.Group>
 
-          <Form.Group className="mb-4">
+          <Form.Group className="form-group">
             <Form.Label>
-              <FaHome className="me-2 text-secondary" />
-              Address (Optional)
+              <FaHome className="icon" />
+              Alamat (Opsional)
             </Form.Label>
             <Form.Control
               as="textarea"
@@ -267,37 +243,35 @@ export default function SignUpModal({ show, onHide, openSignIn }) {
               name="address"
               value={form.address}
               onChange={handleChange}
-              placeholder="Your full address"
-              style={{ borderRadius: '8px', padding: '10px' }}
+              placeholder="Alamat lengkap"
             />
           </Form.Group>
 
           <Button 
             type="submit"
-            variant="success"
-            className="w-100 fw-semibold py-2"
+            variant="primary"
+            className="submit-button"
             disabled={isLoading}
-            style={{ borderRadius: '8px' }}
           >
             {isLoading && (
               <Spinner animation="border" size="sm" className="me-2" />
             )}
-            {isLoading ? "Processing..." : "Register Now"}
+            {isLoading ? "Memproses..." : "Daftar Sekarang"}
           </Button>
         </Form>
 
-        <div className="text-center mt-3">
-          <p className="text-muted mb-0">
-            Already have an account?{" "}
+        <div className="login-redirect">
+          <p className="text">
+            Sudah punya akun?{" "}
             <button
               type="button"
-              className="btn btn-link p-0 text-success fw-semibold"
+              className="login-link"
               onClick={() => {
                 onHide();
                 openSignIn();
               }}
             >
-              Sign in here
+              Masuk disini
             </button>
           </p>
         </div>

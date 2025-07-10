@@ -2,6 +2,8 @@ import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { API, getImageUrl } from '../config/api';
 import { UserContext } from '../context/userContext';
+import SignInModal from '../components/SignIn';
+import SignUpModal from '../components/SignUp';
 
 const dummyCampaigns = [
   {
@@ -24,10 +26,12 @@ const DetailCampaign = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [state] = useContext(UserContext);
-  const isAdmin = state.isLogin && state.user?.is_admin;
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [campaign, setCampaign] = useState(null);
   const [amount, setAmount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const isAdmin = state.isLogin && state.user?.is_admin;
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -53,9 +57,7 @@ const DetailCampaign = () => {
 
   const handleDonate = async () => {
     if (!state.isLogin) {
-      if (window.confirm("Anda belum login. Ingin menuju ke halaman login sekarang?")) {
-        return navigate("/login");
-      }
+      setShowLoginModal(true);
       return;
     }
 
@@ -64,6 +66,7 @@ const DetailCampaign = () => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const res = await API.post("/donations", {
         amount: Number(amount),
@@ -81,11 +84,24 @@ const DetailCampaign = () => {
       });
     } catch (err) {
       console.error("Gagal memproses donasi:", err);
+      alert("Terjadi kesalahan saat memproses donasi");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   if (!campaign) {
-    return <div style={{ textAlign: 'center', marginTop: '50px' }}>Data tidak ditemukan</div>;
+    return (
+      <div style={{ 
+        textAlign: 'center', 
+        marginTop: '50px',
+        padding: '40px 5%',
+        backgroundColor: '#f9f9f9',
+        minHeight: '100vh'
+      }}>
+        <h3>Data tidak ditemukan</h3>
+      </div>
+    );
   }
 
   const targetAmount = campaign.target_total || 0;
@@ -108,11 +124,17 @@ const DetailCampaign = () => {
       minHeight: '100vh'
     }}>
       <div style={{ flex: '1 1 600px', maxWidth: '600px' }}>
-        <img src={getImageUrl(campaign.photo)} alt={campaign.title} style={{
-          width: '100%',
-          borderRadius: '10px',
-          boxShadow: '0 0 10px rgba(0,0,0,0.1)'
-        }} />
+        <img 
+          src={getImageUrl(campaign.photo)} 
+          alt={campaign.title} 
+          style={{
+            width: '100%',
+            borderRadius: '10px',
+            boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+            objectFit: 'cover',
+            maxHeight: '500px'
+          }} 
+        />
       </div>
 
       <div style={{
@@ -123,10 +145,38 @@ const DetailCampaign = () => {
         boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
         minWidth: '320px'
       }}>
-        <div style={{ marginBottom: '15px', fontSize: '14px', color: '#777' }}>{campaign.category}</div>
-        <h2 style={{ fontSize: '22px', marginBottom: '10px', color: '#222' }}>{campaign.title}</h2>
-        <div style={{ marginBottom: '10px', color: '#888', fontSize: '14px' }}>📍 {campaign.location}</div>
-        <div style={{ marginBottom: '15px', color: '#555' }}><strong>{campaign.user_name}</strong></div>
+        <div style={{ marginBottom: '15px', fontSize: '14px', color: '#777' }}>
+          {campaign.category}
+        </div>
+        
+        <h2 style={{ 
+          fontSize: '22px', 
+          marginBottom: '10px', 
+          color: '#222',
+          fontWeight: '600'
+        }}>
+          {campaign.title}
+        </h2>
+        
+        <div style={{ 
+          marginBottom: '10px', 
+          color: '#888', 
+          fontSize: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px'
+        }}>
+          📍 {campaign.location}
+        </div>
+        
+        <div style={{ 
+          marginBottom: '15px', 
+          color: '#555',
+          fontWeight: '500'
+        }}>
+          <strong>{campaign.user_name}</strong>
+        </div>
+        
         <div style={{
           backgroundColor: '#e6f4ea',
           color: '#207a41',
@@ -146,7 +196,12 @@ const DetailCampaign = () => {
         }}>
           Rp {campaign.total_collected.toLocaleString('id-ID')}
         </div>
-        <div style={{ fontSize: '13px', marginBottom: '15px', color: '#666' }}>
+        
+        <div style={{ 
+          fontSize: '13px', 
+          marginBottom: '15px', 
+          color: '#666' 
+        }}>
           {percent.toFixed(2)}% dari target Rp {targetAmount.toLocaleString('id-ID')}
         </div>
 
@@ -160,14 +215,18 @@ const DetailCampaign = () => {
           <div style={{
             height: '100%',
             width: `${percent}%`,
-            backgroundColor: '#4caf50'
+            backgroundColor: '#4caf50',
+            transition: 'width 0.5s ease'
           }} />
         </div>
 
         <div style={{
           fontSize: '13px',
           color: '#666',
-          marginBottom: '20px'
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px'
         }}>
           ⏳ {remainingDays} hari lagi
         </div>
@@ -181,18 +240,22 @@ const DetailCampaign = () => {
               onChange={(e) => setAmount(e.target.value)}
               style={{
                 width: '100%',
-                padding: '10px',
+                padding: '12px',
                 marginBottom: '15px',
-                border: '1px solid #ccc',
+                border: '1px solid #ddd',
                 borderRadius: '6px',
-                fontSize: '16px'
+                fontSize: '16px',
+                transition: 'border 0.3s ease'
               }}
+              min="1000"
+              step="1000"
             />
 
             <button
               onClick={handleDonate}
+              disabled={isLoading}
               style={{
-                backgroundColor: '#4CAF50',
+                backgroundColor: isLoading ? '#6c757d' : '#4CAF50',
                 color: 'white',
                 padding: '12px 20px',
                 border: 'none',
@@ -200,26 +263,31 @@ const DetailCampaign = () => {
                 fontSize: '16px',
                 cursor: 'pointer',
                 width: '100%',
-                marginBottom: '20px'
+                marginBottom: '20px',
+                transition: 'background-color 0.3s ease'
               }}
             >
-              Donasi Sekarang
+              {isLoading ? 'Memproses...' : 'Donasi Sekarang'}
             </button>
           </>
         ) : (
           <div style={{
-            color: 'red',
+            color: '#d32f2f',
             fontWeight: '500',
             textAlign: 'center',
-            marginTop: '20px'
+            marginTop: '20px',
+            padding: '15px',
+            backgroundColor: '#ffebee',
+            borderRadius: '8px'
           }}>
             Anda belum login.{" "}
             <span
-              onClick={() => navigate('/login')}
+              onClick={() => setShowLoginModal(true)}
               style={{
-                color: 'blue',
+                color: '#1976d2',
                 textDecoration: 'underline',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                fontWeight: '600'
               }}
             >
               Login sekarang
@@ -229,25 +297,31 @@ const DetailCampaign = () => {
         )}
 
         {isAdmin && (
-          <div style={{ marginTop: '30px' }}>
+          <div style={{ 
+            marginTop: '30px',
+            display: 'flex',
+            gap: '10px'
+          }}>
             <button
               onClick={() => navigate(`/admin/campaigns/edit/${id}`)}
               style={{
                 padding: '10px 16px',
-                marginRight: '10px',
                 backgroundColor: '#1976D2',
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                flex: 1
               }}
             >
-              Edit
+              Edit Campaign
             </button>
             <button
               onClick={() => {
-                if (window.confirm("Yakin ingin menghapus campaign ini?"))
+                if (window.confirm("Yakin ingin menghapus campaign ini?")) {
+                  // Add delete logic here
                   navigate('/');
+                }
               }}
               style={{
                 padding: '10px 16px',
@@ -255,7 +329,8 @@ const DetailCampaign = () => {
                 color: 'white',
                 border: 'none',
                 borderRadius: '6px',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                flex: 1
               }}
             >
               Hapus
@@ -263,6 +338,24 @@ const DetailCampaign = () => {
           </div>
         )}
       </div>
+
+      <SignInModal 
+        show={showLoginModal}
+        onHide={() => setShowLoginModal(false)}
+        openSignUp={() => {
+          setShowLoginModal(false);
+          setShowSignUpModal(true);
+        }}
+      />
+
+      <SignUpModal 
+        show={showSignUpModal}
+        onHide={() => setShowSignUpModal(false)}
+        openSignIn={() => {
+          setShowSignUpModal(false);
+          setShowLoginModal(true);
+        }}
+      />
     </div>
   );
 };

@@ -43,6 +43,9 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 
 	api.GET("/check-auth", middleware.Auth(handler.CheckAuth))
 
+	// PATCH image
+	api.PATCH("/change-image", middleware.Auth(middleware.UploadFile(handler.ChangeProfileImage, "image")))
+
 	api.POST("/verify-password", func(c echo.Context) error {
 		var req struct {
 			Password string `json:"password"`
@@ -59,6 +62,7 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 			"hash":     req.Hash,
 		})
 	})
+	// api.PATCH("/users/change-password", middleware.Auth(handler.ChangePassword))
 
 	api.POST("/signup", handler.CreateUser)
 	api.POST("/signin", handler.SignIn)
@@ -71,6 +75,7 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 		userRoutes.GET("/:id", handler.GetUser)
 		userRoutes.PUT("/:id", handler.UpdateUser)
 		userRoutes.DELETE("/:id", handler.DeleteUser)
+		userRoutes.PUT("/change-password", middleware.Auth(handler.ChangePassword))
 	}
 
 	// Campaign routes

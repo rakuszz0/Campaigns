@@ -102,14 +102,18 @@ body.modal-open {
 
 /* forgot password styles */
 /* Add to your existing modal styles */
-.forgot-password-modal .modal-header {
-  border-bottom: none;
+.modal-forgot-password {
+  display: none; /* Sembunyikan default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  z-index: 1000;
 }
-
-.forgot-password-modal .modal-body {
-  padding: 2rem;
-}
-
 
 /* ===== WHY US SECTION ===== */
 /* .why-us-section {

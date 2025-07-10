@@ -66,6 +66,9 @@ func (h *Handler) CheckAuth(c echo.Context) error {
 		Name:     user.FirstName + " " + user.LastName,
 		Email:    user.Email,
 		Username: user.Username,
+		Address:  user.Address,
+		Phone:    user.Phone,
+		Photo:    user.Photo,
 		Token:    "",
 		IsAdmin:  user.IsAdmin,
 	}
@@ -73,6 +76,66 @@ func (h *Handler) CheckAuth(c echo.Context) error {
 	return c.JSON(http.StatusOK, dto.SuccessResult{
 		Code: http.StatusOK,
 		Data: userResponse,
+	})
+}
+
+func (h *Handler) ChangePassword(c echo.Context) error {
+	userLogin := c.Get("userLogin")
+	if userLogin == nil {
+		return c.JSON(http.StatusUnauthorized, dto.ErrorResult{
+			Code:    http.StatusUnauthorized,
+			Message: "Unauthorized",
+		})
+	}
+	userID := userLogin.(int)
+
+	var body struct {
+		OldPassword string `json:"old_password"`
+		NewPassword string `json:"new_password"`
+	}
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
+			Code:    http.StatusBadRequest,
+			Message: "Invalid request",
+		})
+	}
+
+	user, err := h.userRepository.GetByID(uint(userID))
+	if err != nil || user == nil {
+		return c.JSON(http.StatusNotFound, dto.ErrorResult{
+			Code:    http.StatusNotFound,
+			Message: "User not found",
+		})
+	}
+
+	if !bcrypt.CheckPasswordHash(body.OldPassword, user.Password) {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
+			Code:    http.StatusBadRequest,
+			Message: "Old password incorrect",
+		})
+	}
+
+	hashedPassword, err := bcrypt.HashingPassword(body.NewPassword)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Error hashing password",
+		})
+	}
+
+	user.Password = hashedPassword
+	user.UpdatedAt = time.Now()
+
+	if err := h.userRepository.Update(user); err != nil {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to update password",
+		})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{
+		Code: http.StatusOK,
+		Data: "Password changed successfully",
 	})
 }
 
@@ -287,9 +350,22 @@ func (h *Handler) GetUser(c echo.Context) error {
 		})
 	}
 
+	response := models.UserResponseJWT{
+		ID:       user.ID,
+		Name:     user.FirstName + " " + user.LastName,
+		Email:    user.Email,
+		Username: user.Username,
+		Gender:   user.Gender,
+		Phone:    user.Phone,
+		Address:  user.Address,
+		Photo:    user.Photo,
+		IsAdmin:  user.IsAdmin,
+		Token:    "",
+	}
+
 	return c.JSON(http.StatusOK, dto.SuccessResult{
 		Code: http.StatusOK,
-		Data: user,
+		Data: response,
 	})
 }
 
@@ -355,6 +431,73 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, dto.SuccessResult{
 		Code: http.StatusOK,
 		Data: user,
+	})
+}
+
+func (h *Handler) ChangeProfileImage(c echo.Context) error {
+	userLogin := c.Get("userLogin")
+	if userLogin == nil {
+		return c.JSON(http.StatusUnauthorized, dto.ErrorResult{
+			Code:    http.StatusUnauthorized,
+			Message: "Unauthorized",
+		})
+	}
+	userID, ok := userLogin.(int)
+	if !ok {
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Invalid user ID type",
+		})
+	}
+
+	filename, ok := c.Get("dataFile").(string)
+	if !ok || filename == "" {
+		return c.JSON(http.StatusBadRequest, dto.ErrorResult{
+			Code:    http.StatusBadRequest,
+			Message: "No image uploaded",
+		})
+	}
+
+	user, err := h.userRepository.GetByID(uint(userID))
+	if err != nil {
+		log.Println("Error fetching user:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to get user",
+		})
+	}
+	if user == nil {
+		return c.JSON(http.StatusNotFound, dto.ErrorResult{
+			Code:    http.StatusNotFound,
+			Message: "User not found",
+		})
+	}
+
+	// Update foto
+	user.Photo = filename
+	user.UpdatedAt = time.Now()
+
+	if err := h.userRepository.Update(user); err != nil {
+		log.Println("Error updating user photo:", err)
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResult{
+			Code:    http.StatusInternalServerError,
+			Message: "Failed to update image",
+		})
+	}
+
+	return c.JSON(http.StatusOK, dto.SuccessResult{
+		Code: http.StatusOK,
+		Data: models.UserResponseJWT{
+			ID:       user.ID,
+			Name:     user.FirstName + " " + user.LastName,
+			Email:    user.Email,
+			Username: user.Username,
+			Gender:   user.Gender,
+			Phone:    user.Phone,
+			Address:  user.Address,
+			Photo:    user.Photo,
+			IsAdmin:  user.IsAdmin,
+		},
 	})
 }
 

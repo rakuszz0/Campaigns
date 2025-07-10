@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { API } from "../config/api";
 import { FaEnvelope, FaCheckCircle, FaArrowLeft } from "react-icons/fa";
 
-export default function ForgotPasswordModal({ show, onHide, openSignIn }) {
+export default function ForgotPasswordModal({ show, onHide, openSignIn, zIndex }) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -19,13 +19,13 @@ export default function ForgotPasswordModal({ show, onHide, openSignIn }) {
       setSuccess(true);
       setMessage({
         type: "success",
-        text: "Password reset link sent to your email!",
+        text: "Tautan reset password telah dikirim ke email Anda!",
       });
     },
     onError: (error) => {
       setMessage({
         type: "danger",
-        text: error.response?.data?.message || "Failed to send reset link",
+        text: error.response?.data?.message || "Gagal mengirim tautan reset",
       });
     },
   });
@@ -51,16 +51,24 @@ export default function ForgotPasswordModal({ show, onHide, openSignIn }) {
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered backdrop="static">
+    <Modal 
+      show={show} 
+      onHide={onHide} 
+      centered 
+      backdrop="static"
+      style={{
+        zIndex: zIndex || 1060
+      }}
+    >
       <Modal.Header closeButton>
         <Modal.Title className="w-100 text-center">
           <h3 className="fw-bold text-primary">
-            {success ? "Check Your Email" : "Forgot Password"}
+            {success ? "Cek Email Anda" : "Lupa Password"}
           </h3>
           <p className="text-muted small mb-0">
             {success
-              ? "We've sent instructions to your email"
-              : "Enter your email to reset your password"}
+              ? "Kami telah mengirim instruksi ke email Anda"
+              : "Masukkan email untuk mereset password"}
           </p>
         </Modal.Title>
       </Modal.Header>
@@ -76,15 +84,15 @@ export default function ForgotPasswordModal({ show, onHide, openSignIn }) {
           <div className="text-center py-4">
             <FaCheckCircle className="text-success mb-3" size={48} />
             <p>
-              We've sent a password reset link to <strong>{email}</strong>. Please
-              check your inbox.
+              Kami telah mengirim tautan reset password ke <strong>{email}</strong>. 
+              Silakan cek inbox email Anda.
             </p>
             <Button 
               variant="primary" 
               onClick={handleBackToSignIn}
               className="mt-3"
             >
-              <FaArrowLeft className="me-2" /> Back to Sign In
+              <FaArrowLeft className="me-2" /> Kembali ke Masuk
             </Button>
           </div>
         ) : (
@@ -92,17 +100,17 @@ export default function ForgotPasswordModal({ show, onHide, openSignIn }) {
             <Form.Group className="mb-4">
               <Form.Label>
                 <FaEnvelope className="me-2" />
-                Email Address
+                Alamat Email
               </Form.Label>
               <Form.Control
                 required
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your registered email"
+                placeholder="Masukkan email terdaftar"
               />
               <Form.Control.Feedback type="invalid">
-                Please provide a valid email address
+                Harap masukkan alamat email yang valid
               </Form.Control.Feedback>
             </Form.Group>
 
@@ -114,10 +122,10 @@ export default function ForgotPasswordModal({ show, onHide, openSignIn }) {
               {isLoading ? (
                 <>
                   <Spinner animation="border" size="sm" className="me-2" />
-                  Sending...
+                  Mengirim...
                 </>
               ) : (
-                "Send Reset Link"
+                "Kirim Tautan Reset"
               )}
             </Button>
 
@@ -127,7 +135,7 @@ export default function ForgotPasswordModal({ show, onHide, openSignIn }) {
                 className="btn btn-link text-decoration-none"
                 onClick={handleBackToSignIn}
               >
-                <FaArrowLeft className="me-2" /> Back to Sign In
+                <FaArrowLeft className="me-2" /> Kembali ke Masuk
               </button>
             </div>
           </Form>

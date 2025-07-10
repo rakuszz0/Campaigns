@@ -1,7 +1,7 @@
 import React, { useState, useContext, useMemo } from "react";
 import { UserContext } from "../context/userContext";
 import { useQuery } from "@tanstack/react-query";
-import { API } from "../config/api";
+import { API, getImageUrl } from "../config/api";
 import { Image, Button, Spinner, Alert } from "react-bootstrap";
 import { 
   HiUserCircle, 
@@ -16,13 +16,15 @@ import { TbGenderBigender } from "react-icons/tb";
 import ChangePassword from "../components/ChangePassword";
 import ChangeImageModal from "../components/ChangeImage";
 import "./Profile-css.css";
+import EditProfile from "../components/EditProfile";
 
 export default function Profile() {
   const [state] = useContext(UserContext);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showChangeImage, setShowChangeImage] = useState(false);
   const userId = useMemo(() => state.user?.id, [state.user?.id]);
-// Tambahkan ini di komponen Profile untuk melihat data yang tersedia
+  const [showEditProfile, setShowEditProfile] = useState(false);
+
 console.log("User data from context:", state.user);
   const { 
     data: userProfile, 
@@ -46,7 +48,7 @@ console.log("User data from context:", state.user);
         };
       }
     },
-    enabled: !!userId // Only run query if userId exists
+    enabled: !!userId
   });
 
  const displayData = useMemo(() => ({
@@ -82,6 +84,15 @@ console.log("User data from context:", state.user);
               <h1 className="profile-title">
                 <strong>Personal Info</strong>
               </h1>
+
+              <Button 
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => setShowEditProfile(true)}
+                >
+                  Edit Profile
+                </Button>
+              
               
               <div className="info-item">
                 <HiUserCircle className="info-icon" />
@@ -142,7 +153,7 @@ console.log("User data from context:", state.user);
               <div className="image-wrapper">
                 {displayData?.photo ? (
                   <Image 
-                    src={displayData.photo} 
+                    src={getImageUrl(displayData.photo)} 
                     className="profile-image"
                     alt="Profile"
                   />
@@ -162,6 +173,10 @@ console.log("User data from context:", state.user);
           </div>
         </div>
       </div>
+      <EditProfile 
+        show={showEditProfile} 
+        onHide={() => setShowEditProfile(false)} 
+      />
 
       <ChangePassword 
         show={showChangePassword} 
