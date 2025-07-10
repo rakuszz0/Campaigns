@@ -85,12 +85,6 @@ export default function ContentData() {
     fetchCampaigns();
   }, []);
 
-  // const getFullPhotoUrl = (photo) => {
-  //   if (!photo) return "https://via.placeholder.com/600x300?text=No+Image";
-  //   if (photo.startsWith("http")) return photo;
-  //   return getImageUrl(photo); // Pakai dari config/api.js
-  // };
-
   return (
     <div style={{ maxWidth: "1100px", margin: "auto", padding: "40px 20px" }}>
       <h2 style={{ marginBottom: "30px", textAlign: "center" }}>Layanan Kami</h2>

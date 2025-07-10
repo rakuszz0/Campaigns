@@ -218,7 +218,6 @@ func (h *Handler) CreateUser(c echo.Context) error {
 		Token:     token,
 	}
 
-	// Return ke client dengan struktur BaseResponse
 	return c.JSON(http.StatusCreated, dtoAuth.NewAuthResponse("Registration successful!", authData))
 }
 
@@ -570,7 +569,7 @@ func (h *Handler) CreateCampaign(c echo.Context) error {
 	src, _ := file.Open()
 	defer src.Close()
 
-	// Simpan file ke folder uploads (contoh)
+	// Simpan file ke folder uploads
 	filename := fmt.Sprintf("uploads/%d-%s", time.Now().Unix(), file.Filename)
 	dst, _ := os.Create(filename)
 	defer dst.Close()

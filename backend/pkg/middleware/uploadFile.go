@@ -59,7 +59,7 @@ func UploadFile(next echo.HandlerFunc, formImage string) echo.HandlerFunc {
 			})
 		}
 
-		filename := tempFile.Name()[8:] // remove "uploads/"
+		filename := tempFile.Name()[8:]
 		c.Set("dataFile", filename)
 
 		return next(c)

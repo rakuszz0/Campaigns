@@ -15,9 +15,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// PERBAIKAN: menerima e dari main.go, bukan bikin baru
 func InitRouter(e *echo.Echo, db *gorm.DB) {
-	// (hapus e := echo.New())
 
 	// Tambahkan middleware lagi kalau mau, tapi tidak wajib karena sudah di main.go
 	e.Use(echoMiddleware.Logger())
@@ -62,7 +60,6 @@ func InitRouter(e *echo.Echo, db *gorm.DB) {
 			"hash":     req.Hash,
 		})
 	})
-	// api.PATCH("/users/change-password", middleware.Auth(handler.ChangePassword))
 
 	api.POST("/signup", handler.CreateUser)
 	api.POST("/signin", handler.SignIn)

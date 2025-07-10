@@ -14,14 +14,14 @@ var (
 )
 
 func Init() {
-	// Ambil key dari environment variable (disarankan)
+	// Ambil key dari environment variable
 	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
 	clientKey := os.Getenv("MIDTRANS_CLIENT_KEY")
 
 	// Setup Midtrans config global
 	midtrans.ServerKey = serverKey
 	midtrans.ClientKey = clientKey
-	midtrans.Environment = midtrans.Sandbox // Ganti ke midtrans.Production jika live
+	midtrans.Environment = midtrans.Sandbox
 
 	// Inisialisasi Snap Client
 	SnapClient = snap.Client{}
