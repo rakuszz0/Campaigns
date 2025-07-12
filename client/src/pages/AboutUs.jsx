@@ -1,4 +1,5 @@
 import React from 'react';
+import RumahGadang from "../assests/icons/RGS.jpg";
 
 const AboutUs = () => {
   return (
@@ -25,7 +26,7 @@ const AboutUs = () => {
         <div style={styles.imageContainer}>
           <div style={styles.imageWrapper}>
             <img 
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
+              src={RumahGadang}
               alt="Our Team" 
               style={styles.image}
             />
