@@ -338,6 +338,24 @@ const DetailCampaign = () => {
           </div>
         )}
       </div>
+      <div style={{
+  width: '100%',
+  marginTop: '40px',
+  backgroundColor: '#fff',
+  padding: '30px',
+  borderRadius: '12px',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+  lineHeight: '1.6',
+  color: '#333',
+  maxWidth: '800px'
+}}>
+  <h4 style={{ marginBottom: '15px', fontWeight: '600' }}>Tentang Campaign</h4>
+  {campaign.description ? (
+    <div dangerouslySetInnerHTML={{ __html: campaign.description }} />
+  ) : (
+    <p>Deskripsi belum tersedia untuk campaign ini.</p>
+  )}
+</div>
 
       <SignInModal 
         show={showLoginModal}

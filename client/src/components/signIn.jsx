@@ -35,18 +35,19 @@ export default function SignInModal({ show, onHide, openSignUp }) {
   });
 
   return (
-    <>
+  <>
+    {!showForgotPassword && (
       <Modal 
         show={show} 
-        onHide={() => {onHide();}}
+        onHide={onHide}
         centered
-        backdrop={showForgotPassword ? false : "static"}
+        backdrop="static"
         style={{
           position: 'fixed',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          zIndex: showForgotPassword ? 1050 : 1060
+          zIndex: 1050,
         }}
       >
         <Modal.Body style={{
@@ -57,7 +58,7 @@ export default function SignInModal({ show, onHide, openSignUp }) {
           margin: '0 auto'
         }}>
           <h4 style={{ textAlign: 'center', marginBottom: '1rem' }}>Masuk ke Akun Anda</h4>
-          
+
           {message && (
             <Alert variant="danger" style={{ marginBottom: '1rem' }}>
               {message}
@@ -68,6 +69,7 @@ export default function SignInModal({ show, onHide, openSignUp }) {
             e.preventDefault();
             handleSubmit.mutate();
           }}>
+            {/* Form Inputs */}
             <Form.Group style={{ marginBottom: '1rem' }}>
               <Form.Control
                 type="text"
@@ -78,10 +80,9 @@ export default function SignInModal({ show, onHide, openSignUp }) {
                 required
               />
             </Form.Group>
-            
+
             <Form.Group style={{ marginBottom: '1rem' }}>
               <Form.Control
-                id="password"
                 type="password"
                 name="password"
                 placeholder="Password"
@@ -96,13 +97,10 @@ export default function SignInModal({ show, onHide, openSignUp }) {
               justifyContent: 'space-between',
               marginBottom: '1rem'
             }}>
-              <Form.Check 
-                type="checkbox"
-                label="Ingat Saya"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <button 
+              <Form.Check type="checkbox" label="Ingat Saya" />
+              <button
                 type="button"
+                onClick={() => setShowForgotPassword(true)}
                 style={{
                   background: 'none',
                   border: 'none',
@@ -111,43 +109,29 @@ export default function SignInModal({ show, onHide, openSignUp }) {
                   cursor: 'pointer',
                   fontSize: '0.875rem'
                 }}
-                onClick={() => setShowForgotPassword(true)}
               >
                 Lupa Password?
               </button>
             </div>
 
-            <Button 
-              type="submit" 
-              style={{
-                width: '100%',
-                marginBottom: '1rem',
-                backgroundColor: '#007bff',
-                border: 'none',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                color: 'white'
-              }}
-              disabled={handleSubmit.isLoading}
-            >
+            <Button type="submit" className="w-100 mb-3">
               {handleSubmit.isLoading ? 'Memproses...' : 'Masuk'}
             </Button>
 
-            <div style={{ textAlign: 'center', fontSize: '0.875rem' }}>
+            <div className="text-center">
               Belum punya akun?{" "}
               <button 
-                type="button" 
+                type="button"
+                onClick={() => {
+                  onHide();
+                  openSignUp();
+                }}
                 style={{
                   background: 'none',
                   border: 'none',
                   padding: 0,
                   color: '#007bff',
-                  cursor: 'pointer',
-                  textDecoration: 'none'
-                }}
-                onClick={() => {
-                  onHide();
-                  openSignUp();
+                  cursor: 'pointer'
                 }}
               >
                 Daftar disini
@@ -156,15 +140,16 @@ export default function SignInModal({ show, onHide, openSignUp }) {
           </Form>
         </Modal.Body>
       </Modal>
+    )}
 
-      <ForgotPasswordModal 
-        show={showForgotPassword}
-        onHide={() => setShowForgotPassword(false)}
-        openSignIn={() => {
-          setShowForgotPassword(false);
-        }}
-        zIndex={1060}
-      />
-    </>
-  );
+    <ForgotPasswordModal
+      show={showForgotPassword}
+      onHide={() => setShowForgotPassword(false)}
+      openSignIn={() => {
+        setShowForgotPassword(false);
+      }}
+    />
+  </>
+);
+
 }

@@ -7,6 +7,7 @@ import { UserContext } from "../context/userContext";
 import { setAuthToken } from "../config/api";
 import { API } from "../config/api";
 
+
 const staticPages = [
   {
     id: 'vision-mission',
@@ -28,6 +29,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [campaigns, setCampaigns] = useState([]);
   const navigate = useNavigate();
+
 
   const [state, dispatch] = useContext(UserContext);
   const isAdmin = state.user?.isAdmin;
@@ -194,6 +196,7 @@ export default function Navbar() {
         onHide={() => setActiveModal(null)}
         openSignIn={() => setActiveModal('signin')}
       />
+
 
       <style jsx="true">{`
         .navbar-container {

@@ -1,33 +1,45 @@
 import React from 'react';
+import Titi from "../assests/icons/tti.jpeg";
 
 const VisionMissionPage = () => {
   return (
     <div style={styles.container}>
+      {/* Header with Title and Image side by side */}
+      <div style={styles.header}>
+        <div style={styles.headerText}>
+          <h1 style={styles.mainTitle}>Visi & Misi</h1>
+          <p style={styles.intro}>
+            Sulit Air Sepakat (SAS) berkomitmen untuk membangun masa depan yang berkelanjutan dan berdampak melalui visi yang jelas dan misi yang kuat.
+          </p>
+        </div>
+        <div style={styles.headerImage}>
+          <img 
+            src={Titi}
+            alt="Team SAS" 
+            style={styles.image}
+          />
+        </div>
+      </div>
 
-      {/* Main Content */}
-      <main style={styles.main}>
-        <h1 style={styles.mainTitle}>Vision & Mission</h1>
-        <p style={styles.intro}>
-          We are committed to building a sustainable and impactful future through clear vision and strong mission.
-        </p>
-
+      {/* Vision and Mission sections below */}
+      <div style={styles.sectionsContainer}>
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Our Vision</h2>
+          <h2 style={styles.sectionTitle}>Visi Kami</h2>
           <p style={styles.paragraph}>
-            To become a leading organization that drives positive change, promotes environmental sustainability,
-            and empowers communities for a better tomorrow.
+            Menjadi organisasi terdepan yang mendorong perubahan positif, mempromosikan solidaritas sosial, dan memberdayakan masyarakat Nagari Sulit Air baik di kampung maupun di perantauan.
           </p>
         </div>
 
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Our Mission</h2>
+          <h2 style={styles.sectionTitle}>Misi Kami</h2>
           <ul style={styles.list}>
-            <li>Promote awareness about environmental issues and sustainable practices.</li>
-            <li>Empower communities through education, campaigns, and green initiatives.</li>
-            <li>Collaborate with partners to develop impactful projects for society and nature.</li>
+            <li style={styles.listItem}>Meningkatkan kesadaran masyarakat tentang pentingnya gotong royong</li>
+            <li style={styles.listItem}>Memberdayakan melalui program Jumat Berkah, Zakat, dan Qurban</li>
+            <li style={styles.listItem}>Membangun sarana keagamaan dan sosial untuk Nagari Sulit Air</li>
+            <li style={styles.listItem}>Menyediakan platform donasi online yang transparan</li>
           </ul>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
@@ -36,72 +48,75 @@ const VisionMissionPage = () => {
 const styles = {
   container: {
     fontFamily: "'Arial', sans-serif",
-    maxWidth: '1000px',
+    maxWidth: '1200px',
     margin: '0 auto',
     padding: '40px 20px',
     color: '#333',
+    // backgroundColor: '#f8f9fa',
   },
-  nav: {
-    marginBottom: '40px',
-    borderBottom: '1px solid #ddd',
-    paddingBottom: '10px',
-  },
-  navList: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0,
+  header: {
     display: 'flex',
-    gap: '30px',
+    alignItems: 'center',
+    gap: '50px',
+    marginBottom: '40px',
   },
-  navItem: {},
-  navLink: {
-    textDecoration: 'none',
-    color: '#2c3e50',
-    fontSize: '18px',
-    fontWeight: '600',
-    transition: 'color 0.3s',
+  headerText: {
+    flex: 1,
   },
-  main: {
-    textAlign: 'center',
+  headerImage: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  image: {
+    width: '100%',
+    maxWidth: '400px',
+    height: 'auto',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
   },
   mainTitle: {
-    fontSize: '40px',
+    fontSize: '32px',
     fontWeight: '700',
     marginBottom: '20px',
-    color: '#2c3e50',
+    color: '#27ae60',
   },
   intro: {
-    fontSize: '18px',
-    lineHeight: '1.7',
+    fontSize: '16px',
+    lineHeight: '1.6',
     color: '#555',
-    marginBottom: '40px',
-    maxWidth: '700px',
-    marginLeft: 'auto',
-    marginRight: 'auto',
+  },
+  sectionsContainer: {
+    display: 'flex',
+    gap: '40px',
   },
   section: {
-    marginBottom: '40px',
-    padding: '30px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '10px',
-    textAlign: 'left',
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: '25px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
   },
   sectionTitle: {
-    fontSize: '28px',
+    fontSize: '22px',
     fontWeight: '600',
     marginBottom: '15px',
     color: '#27ae60',
   },
   paragraph: {
-    fontSize: '17px',
-    lineHeight: '1.7',
+    fontSize: '15px',
+    lineHeight: '1.6',
     color: '#555',
   },
   list: {
     paddingLeft: '20px',
-    fontSize: '17px',
-    lineHeight: '1.7',
+    margin: 0,
+  },
+  listItem: {
+    fontSize: '15px',
+    lineHeight: '1.6',
     color: '#555',
+    marginBottom: '8px',
   },
 };
 

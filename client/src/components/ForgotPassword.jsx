@@ -56,8 +56,13 @@ export default function ForgotPasswordModal({ show, onHide, openSignIn, zIndex }
       onHide={onHide} 
       centered 
       backdrop="static"
+      dialogClassName="custom-forgot-modal"
       style={{
-        zIndex: zIndex || 1060
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 1060,
       }}
     >
       <Modal.Header closeButton>

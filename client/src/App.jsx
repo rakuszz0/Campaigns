@@ -28,6 +28,8 @@ import { API, setAuthToken } from "./config/api";
 // Assets
 import BackgroundImage from "./assests/icons/web amalsas.jpg";
 
+
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
