@@ -120,7 +120,7 @@ const DetailCampaign = () => {
       alignItems: 'flex-start',
       padding: '40px 5%',
       gap: '40px',
-      backgroundColor: '#f9f9f9',
+      // backgroundColor: '#f9f9f9',
       minHeight: '100vh'
     }}>
       <div style={{ flex: '1 1 600px', maxWidth: '600px' }}>

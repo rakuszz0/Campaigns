@@ -26,7 +26,7 @@ import { UserContext } from "./context/userContext";
 import { API, setAuthToken } from "./config/api";
 
 // Assets
-import BackgroundImage from "./assests/icons/web amalsas.jpg";
+import BackgroundImage from "./assests/icons/BGN.png";
 
 
 
