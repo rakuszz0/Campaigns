@@ -506,14 +506,6 @@ func (h *Handler) ChangeProfileImage(c echo.Context) error {
 	})
 }
 
-// Helper function to check if photo is default
-// func isDefaultPhoto(photo string) bool {
-// 	return photo == "" ||
-// 		photo == "default.png" ||
-// 		strings.HasPrefix(photo, "https://") ||
-// 		strings.HasPrefix(photo, "http://")
-// }
-
 func (h *Handler) DeleteUser(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

@@ -71,6 +71,7 @@ export default function ChangeImageModal({ show, onHide, onSuccess }) {
   };
 
   return (
+    <div className="change-image-modal">
     <Modal 
       show={show} 
       onHide={onHide} 
@@ -82,7 +83,8 @@ export default function ChangeImageModal({ show, onHide, onSuccess }) {
       <Modal.Header closeButton className="modal-header">
         <Modal.Title className="modal-title">Change Profile Image</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="modal-body">
+      
+      <Modal.Body className="modal-body"> 
         {error && (
           <div className="alert alert-danger" role="alert">
             {error}
@@ -110,6 +112,8 @@ export default function ChangeImageModal({ show, onHide, onSuccess }) {
           </Button>
         </Form>
       </Modal.Body>
+      
     </Modal>
+    </div>
   );
 }

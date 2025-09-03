@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"zakat/database"
+	"zakat/pkg/midtrans"
 	"zakat/pkg/mysql"
 	"zakat/routes"
 
@@ -20,6 +21,9 @@ func main() {
 		log.Fatal("Failed to load .env file")
 	}
 	fmt.Println("SECRET_KEY from .env:", os.Getenv("SECRET_KEY"))
+	// Initialize Midtrans
+	fmt.Println("Initializing Midtrans...")
+	midtrans.Init()
 
 	// Initialize database connection
 	mysql.DatabaseInit()
@@ -50,6 +54,10 @@ func main() {
 	if port == "" {
 		port = "5050"
 	}
+
+	fmt.Println("🚀 Server running at http://localhost:" + port)
+	fmt.Println("🔗 Midtrans Environment: Sandbox")
+	fmt.Println("💳 Payment Notification: http://localhost:" + port + "/api/v1/donations/notifications")
 
 	fmt.Println("🚀 Server running at http://localhost:" + port)
 	e.Logger.Fatal(e.Start(":" + port))
