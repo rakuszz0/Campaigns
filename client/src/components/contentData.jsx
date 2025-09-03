@@ -74,11 +74,19 @@ export default function ContentData() {
           setTotalDonasi(data.total_collected);
           setTotalTransaksi(data.total_transactions);
         } else {
+         console.log("Using dummy data");
           setCampaigns(dummyCampaigns);
+          setTotalCampaign(dummyCampaigns.length);
+          setTotalDonasi(dummyCampaigns.reduce((sum, c) => sum + c.total_collected, 0));
+          setTotalTransaksi(dummyCampaigns.length * 10); // dummy transactions
         }
       } catch (error) {
-        console.error("Gagal mengambil data campaign:", error.message);
+        console.error("Gagal mengambil data campaign:", error);
+        console.log("Using dummy data due to error");
         setCampaigns(dummyCampaigns);
+        setTotalCampaign(dummyCampaigns.length);
+        setTotalDonasi(dummyCampaigns.reduce((sum, c) => sum + c.total_collected, 0));
+        setTotalTransaksi(dummyCampaigns.length * 10);
       }
     };
 
