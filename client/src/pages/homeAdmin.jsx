@@ -142,13 +142,13 @@ function HomeAdmin() {
                 <td>{campaign.title}</td>
                 <td>
                   {campaign.category === "pendidikan" && <FaGraduationCap style={{ marginRight: 6, color: "#0d6efd" }} />}
-{campaign.category === "bencana" && <FaHouseDamage style={{ marginRight: 6, color: "#dc3545" }} />}
-{campaign.category === "kesehatan" && <FaHeartbeat style={{ marginRight: 6, color: "#28a745" }} />}
-{campaign.category === "lingkungan" && <FaLeaf style={{ marginRight: 6, color: "#20c997" }} />}
-{campaign.category === "sosial" && <FaHandsHelping style={{ marginRight: 6, color: "#17a2b8" }} />}
-{campaign.category === "agama" && <FaPrayingHands style={{ marginRight: 6, color: "#6f42c1" }} />}
-{campaign.category === "kesenian" && <FaPalette style={{ marginRight: 6, color: "#fd7e14" }} />}
-{campaign.category === "lainnya" && <FaQuestionCircle style={{ marginRight: 6, color: "#5e6d7aff" }} />}
+                  {campaign.category === "bencana" && <FaHouseDamage style={{ marginRight: 6, color: "#dc3545" }} />}
+                  {campaign.category === "kesehatan" && <FaHeartbeat style={{ marginRight: 6, color: "#28a745" }} />}
+                  {campaign.category === "lingkungan" && <FaLeaf style={{ marginRight: 6, color: "#20c997" }} />}
+                  {campaign.category === "sosial" && <FaHandsHelping style={{ marginRight: 6, color: "#17a2b8" }} />}
+                  {campaign.category === "agama" && <FaPrayingHands style={{ marginRight: 6, color: "#6f42c1" }} />}
+                  {campaign.category === "kesenian" && <FaPalette style={{ marginRight: 6, color: "#fd7e14" }} />}
+                  {campaign.category === "lainnya" && <FaQuestionCircle style={{ marginRight: 6, color: "#5e6d7aff" }} />}
                   {campaign.category}
                 </td>
                 <td style={{ textAlign: "center" }}>{formatRupiah(campaign.target_total)}</td>
