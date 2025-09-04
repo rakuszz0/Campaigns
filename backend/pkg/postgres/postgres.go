@@ -11,13 +11,14 @@ import (
 var DB *gorm.DB
 
 func DatabaseInit() {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta",
-		os.Getenv("Db_HOST"),
-		os.Getenv("Db_USER"),
-		os.Getenv("Db_PASS"),
-		os.Getenv("Db_NAME"),
-		os.Getenv("Db_PORT"))
-
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable&TimeZone=Asia/Jakarta",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASS"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+	fmt.Println("DSN URL:", dsn)
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
