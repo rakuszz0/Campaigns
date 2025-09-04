@@ -7,7 +7,7 @@ import (
 
 	"zakat/database"
 	"zakat/pkg/midtrans"
-	"zakat/pkg/mysql"
+	"zakat/pkg/postgres"
 	"zakat/routes"
 
 	"github.com/joho/godotenv"
@@ -26,7 +26,7 @@ func main() {
 	midtrans.Init()
 
 	// Initialize database connection
-	mysql.DatabaseInit()
+	postgres.DatabaseInit()
 
 	// Run database migration
 	database.RunMigration()
@@ -47,7 +47,7 @@ func main() {
 	e.Static("/uploads", "uploads")
 
 	// Initialize routes using existing echo instance
-	routes.InitRouter(e, mysql.DB)
+	routes.InitRouter(e, postgres.DB)
 
 	// Get port from .env or fallback
 	port := os.Getenv("PORT")
